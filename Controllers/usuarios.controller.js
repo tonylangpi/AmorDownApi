@@ -1,18 +1,24 @@
 const {sequelize} = require("../Database/bd");
 const { QueryTypes } = require('sequelize');
 const bcrypt = require('bcryptjs'); 
-const {User} = require('../Models/login');
-const { PassThrough } = require("stream");
 
 const getUsers = async (req, res) => {
     try {
-        const usuarios  = await User.findAll(); 
+        const usuarios  = await sequelize.query('SELECT * FROM usuarios', { type: QueryTypes.SELECT }); 
         res.json({data:usuarios});
     } catch (error) {
         console.error(error);
     }
 }
 
+const getUsersAndRoles = async (req, res) => {
+    try {
+        const consulta = await sequelize.query('SELECT  usuarios.nombre, ROLES.nombre_rol FROM usuarios INNER JOIN ROLES ON ROLES.id_roles', { type: QueryTypes.SELECT });
+        res.json({data: consulta}); 
+    } catch (error) {
+        console.error(error); 
+    }
+}
 const createUsers = async(req, res) => {
     const {email, nombre, nit, DPI, direccion, telefono, id_roles} = req.body;
          const status = "active";
@@ -42,16 +48,7 @@ const createUsers = async(req, res) => {
         let passwordHash = await bcrypt.hash(password, 10);
     
     try {
-        await User.create({
-            email: email,
-            nombre: nombre,
-            nit: nit,
-            DPI: DPI,
-            direccion: direccion,
-            telefono: telefono,
-            id_roles: id_roles,
-            CONTRASEÑA: passwordHash
-        })
+        await sequelize.query(`INSERT INTO usuarios(email, nombre, nit, DPI, direccion, telefono, id_roles, CONTRASEÑA) VALUES ('${email}', '${nombre}',  '${nit}', '${DPI}', '${direccion}', '${telefono}', ${id_roles}, '${passwordHash}')`, { type: QueryTypes.INSERT });
         res.json("usuario creado correctamente");
     } catch (error) {
         console.log(error);
@@ -60,5 +57,6 @@ const createUsers = async(req, res) => {
 
 module.exports = {
     getUsers,
-    createUsers
+    createUsers,
+    getUsersAndRoles,
 }
