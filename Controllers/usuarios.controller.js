@@ -54,7 +54,7 @@ const createUsers = async(req, res) => {
         const passregex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/;
     
    
-        if(!email.trim().length || !password.trim().length  || !nombre.trim().length || !id_roles.trim().length || !status.trim().length){
+        if(!email.trim().length || !password.trim().length  || !nombre.trim().length || !status.trim().length){
             res.json({
                 message: 'Faltan datos',
                 auth: false,
@@ -84,7 +84,7 @@ const createUsers = async(req, res) => {
                         token: null
                     })
                 }else {
-                    connection.query('INSERT INTO USUARIOS SET ?', {email: email, nombre: nombre, id_roles: id_roles, contraseña: passwordHash,status: status },async (error, results) =>{
+                    connection.query('INSERT INTO USUARIOS SET ?', {email: email, nombre: nombre, id_roles: id_roles, contraseña: passwordHash,estado: status },async (error, results) =>{
             if(error){
                 console.log(error);
             }else{ 
