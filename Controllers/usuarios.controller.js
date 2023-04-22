@@ -4,14 +4,39 @@ const bcrypt = require('bcryptjs');
 const {transporter} = require('../services/nodemailer.services');
 const jwt = require('jsonwebtoken');
 
-const getUsers = async (req, res) => {
-    try {
-        const usuarios  = await sequelize.query('SELECT email, nombre FROM USUARIOS', { type: QueryTypes.SELECT }); 
-        res.json({data:usuarios});
-    } catch (error) {
-        console.error(error);
-    }
+const getUsers = (req, res) => {
+     connection.query('Select US.id, US.nombre, US.estado from USUARIOS US', (error, results) => {
+        if(error){
+            console.log(error);
+        }else{
+            res.json(results);
+        }
+    })
+    
 }
+
+const getUser = (req, res) => {
+    const {id} = req.body;
+    connection.query('Select US.id, US.email, US.nombre, US.estado, RO.nombre_rol from USUARIOS US inner join ROLES RO on US.id_roles = RO.id_roles where id = ?', [id], (error, results) => {
+        if(error){
+            console.log(error);
+        }else{
+            res.json(results);
+        }
+    })
+}
+
+const getUserName = (req, res) => {
+    const {nombre} = req.body;
+    connection.query('Select US.id, US.nombre , US.estado from USUARIOS US where nombre Like ?', [nombre + "%"], (error, results) => {
+        if(error){
+            console.log(error);
+        }else{
+            res.json(results);
+        }
+    })
+}
+
 
 const getUsersAndRoles = async (req, res) => {
     try {
@@ -118,10 +143,10 @@ const createUsers = async(req, res) => {
 }
 
 const updateUsers = async (req, res) => {
-    const {id, email, nombre, id_roles, status} = req.body;
+    const {id, email, nombre, estado} = req.body;
         const emailregex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 
-        if(!idlogin.trim().length || !email.trim().length || !nombre.trim().length || !lastName.trim().length || !role.trim().length || !status.trim().length){
+        if(!email.trim().length || !nombre.trim().length || !estado.trim().length){
             res.json({
                 message: 'Faltan datos',
                 auth: false,
@@ -134,14 +159,12 @@ const updateUsers = async (req, res) => {
                 token: null
             })
         }else {
-            connection.query('UPDATE USUARIOS SET ? WHERE id = ?', [{email: email, nombre: nombre, id_roles: id_roles,status: status }, id], (error, results) =>{
+            connection.query('UPDATE USUARIOS SET ? WHERE id = ?', [{email: email, nombre: nombre,estado: estado }, id], (error, results) =>{
                         if(error){
                             console.log(error);
                         }else{ 
                             res.json({
                                 message: 'Usuario actualizado',
-                                auth: true,
-                                token:jwt.sign({email: email}, process.env.SECRET, {expiresIn: 60 * 60 * 24 * 30}),
                              
                             });
                         }
@@ -212,33 +235,26 @@ const updateUsersRol = async (req, res) => {
 const inactivateUsers = async (req, res) => {
     const {id} = req.body;
 
-    if(!id.trim().length){
-        res.json({
-            message: 'Faltan datos',
-            auth: false,
-            token: null
-        })
-    }else {
-        connection.query('UPDATE USUARIOS SET ? WHERE id = ?', [{status: 0}, id], (error, results) =>{
+        connection.query('UPDATE USUARIOS SET ? WHERE id = ?', [{estado: 0}, id], (error, results) =>{
                     if(error){
                         console.log(error);
                     }else{ 
                         res.json({
                             message: 'Usuario inactivado',
-                            auth: true,
-                            token:jwt.sign({email: email}, process.env.SECRET, {expiresIn: 60 * 60 * 24 * 30}),
-                         
+
                         });
                     }
                 }
             );
-        }
 }
+
 
 
 
 module.exports = {
     getUsers,
+    getUser,
+    getUserName,
     createUsers,
     getUsersAndRoles,
     updateUsers,
