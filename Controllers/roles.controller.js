@@ -1,13 +1,14 @@
-const {sequelize} = require("../Database/bd");
+const {sequelize,connection} = require("../Database/bd");
 const { QueryTypes } = require('sequelize');
 
 const getRoles = async (req, res) => {
-    try {
-        const roles  = await sequelize.query('SELECT * FROM ROLES', { type: QueryTypes.SELECT }); 
-        res.json({data:roles});
-    } catch (error) {
-        res.json(error);
-    }
+    connection.query('SELECT * FROM ROLES', (error, results) => {
+        if(error){
+            console.log(error);
+        }else{
+            res.json(results);
+        }
+    })
 }
 
 const createRoles = async (req, res) =>{

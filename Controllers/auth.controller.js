@@ -159,11 +159,39 @@ const mailRecoverPassword = async (req, res) => {
     }
 }
 
+const auth =  (req, res, next) =>{
+    const {token} = req.body;
+
+    if(token){
+
+        try{
+            const decoded =  jwt.verify(token, process.env.SECRET);
+            res.json({ message: "Token valido",
+                auth: true 
+        });
+            //quiero retornar verdadero para que el middleware de la ruta pueda continuar
+            next();
+        }catch(error){
+            res.json({ message: "Token invalido",
+                auth: false });
+
+        } 
+    }
+    else{
+            res.json({ message: "No autorizado",
+                auth: false });
+
+        }
+     
+    }
+    
+
 
 
 module.exports = {
     login,
     logout,
-    mailRecoverPassword
+    mailRecoverPassword,
+    auth
 }
 
