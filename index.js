@@ -3,6 +3,7 @@ const morgan = require('morgan');
 var cors = require('cors'); 
 const app = express();
 const rutas = require('./Routes/index');
+app.use(express.static('public'));
 app.use(cors()); 
 app.use(morgan('dev'));
 app.use(express.json());
