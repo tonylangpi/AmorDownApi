@@ -6,10 +6,7 @@ const { QueryTypes } = require('sequelize');
 const createBeneficiarios = async(req, res) => {
 
     const{ID_EMPRESA, NOMBRE1,NOMBRE2,NOMBRE3,APELLIDO1,APELLIDO2,ESCOLARIDAD,SEXO,FECHA_NACIMIENTO,DIRECCION,REFERENCIA,NUMERO_HERMANOS,NUMERO_OCUPA} = req.body;
-    // req.files['gratuidad'][0]
-    // req.files['gallery'] 
-    //RUTAS DE ARCHIVOS
-    //const {gratuidad, mspas} = req.file;
+    
     try {
       await sequelize.query(`INSERT INTO BENEFICIARIO (ID_EMPRESA,NOMBRE1,NOMBRE2,NOMBRE3,APELLIDO1,APELLIDO2,ESCOLARIDAD,SEXO,FECHA_NACIMIENTO,FECHA_INGRESO,DIRECCION,REFERENCIA,ESTADO,NUMERO_HERMANOS,NUMERO_OCUPA,RUTA_ARCH1,RUTA_ARCH2) VALUES (${ID_EMPRESA},'${NOMBRE1}','${NOMBRE2}','${NOMBRE3}','${APELLIDO1}','${APELLIDO2}',
       '${ESCOLARIDAD}','${SEXO}','${FECHA_NACIMIENTO}',CURDATE(),'${DIRECCION}','${REFERENCIA}', 'ACTIVO', ${NUMERO_HERMANOS},${NUMERO_OCUPA},'${req?.files[0]?.filename}','${req?.files[1]?.filename}')`,{type: QueryTypes.INSERT});
@@ -89,6 +86,16 @@ const unionBeneficiarioEncargado = async (req,res) =>{
         res.json(error);
     }
 }
+
+const allBeneficiarios = async(req,res) =>{
+    try {
+       const beneficiarios = await sequelize.query(`SELECT * FROM BENEFICIARIO`, {type: QueryTypes.SELECT});
+        res.json({data:beneficiarios});
+    } catch (error) {
+        res.json(error)
+    }
+}
+
 module.exports = {
     createBeneficiarios,
     createPrenatalesBeneficiarios,
@@ -96,5 +103,6 @@ module.exports = {
     createPeriNatales,
     createPostNatales,
     createEncargados,
-    unionBeneficiarioEncargado
+    unionBeneficiarioEncargado,
+    allBeneficiarios,
 }
