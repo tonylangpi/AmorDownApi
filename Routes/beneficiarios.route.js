@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express();
-const upload = require('../services/multer.services');
+const {upload} = require('../services/multer.services');
 const {createBeneficiarios,createPrenatalesBeneficiarios,createHistorialClinico,createPeriNatales,createPostNatales,createEncargados,unionBeneficiarioEncargado, allBeneficiarios} = require('../Controllers/beneficiarios.controller');
 
 router.get('/all', allBeneficiarios);
