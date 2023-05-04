@@ -17,14 +17,14 @@ const allSesiones = async (req, res) => {
 const createSesiones = async (req, res) => {
     const {id_beneficiario, id_usuario, id_sesion, tipo_sesion,observacion, fecha} = req.body;
 
-    connection.query(`SELECT * FROM citas WHERE ID_BENEFICIARIO = '${id_beneficiario}' AND FECHA = '${fecha}' AND ID_SESIONL = '${id_sesion}'`, (error, results) => {
+    connection.query(`SELECT * FROM SESIONES_BENEFICIARIO WHERE ID_BENEFICIARIO = '${id_beneficiario}' AND FECHA = '${fecha}' AND ID_SESION = '${id_sesion}'`, (error, results) => {
         if(error){
             console.log(error);
         }else{
             if(results.length > 0){
                 res.json({message: "Ya existe una cita para este beneficiario en esta fecha y hora"});
             }else{
-    connection.query('INSERT INTO SESIONES_BENEFICIARIO SET ?', {ID_USUARIO:id_usuario,ID_SESIONL:id_sesion,ID_BENEFICIARIO:id_beneficiario, TIPO_SESION:tipo_sesion, OBSERVACION:observacion, FECHA:fecha},async (error, results) => {
+    connection.query('INSERT INTO SESIONES_BENEFICIARIO SET ?', {ID_USUARIO:id_usuario,ID_SESION:id_sesion,ID_BENEFICIARIO:id_beneficiario, TIPO_SESION:tipo_sesion,DIRE_ARCHIVO:req?.file?.filename, OBSERVACION:observacion, FECHA:fecha},async (error, results) => {
         if(error){
             console.log(error);
         }else{
@@ -70,6 +70,5 @@ module.exports = {
     allSesiones,
     createSesiones,
     updateSesiones,
-    deleteSesiones
-
+    deleteSesiones,
 }

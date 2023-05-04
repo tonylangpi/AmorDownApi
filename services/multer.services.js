@@ -10,6 +10,19 @@ const storage = multer.diskStorage({
   }
 });
 
-const upload = multer({ storage: storage });
+const sesionesFiles = multer.diskStorage({
+  destination: function (req, file, cb) {
+      cb(null, 'public/sesiones')
+  },
+  filename: function (req, file, cb) {
+      cb(null, Date.now() + '-' + file.originalname)
+  }
+});
 
-module.exports = upload;
+const upload = multer({ storage: storage });
+const sesionesUpload = multer({storage: sesionesFiles});
+
+module.exports = {
+   upload,
+   sesionesUpload,
+}
