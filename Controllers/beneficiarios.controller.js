@@ -24,9 +24,10 @@ const createBeneficiarios = async(req, res) => {
 }
 
 const createPrenatalesBeneficiarios = async(req, res) => {
-    const {ID_BENEFICIARIO, EMBARAZO_TERMINO, EXPLIQUE_EMBARAZO,PARTO_NORMAL,EXPLIQUE_PARTO,COMPLICACIONES,EXPLIQUE_COMPLICACION} = req.body;
+    const {EMBARAZO_TERMINO, EXPLIQUE_EMBARAZO,PARTO_NORMAL,EXPLIQUE_PARTO,COMPLICACIONES,EXPLIQUE_COMPLICACION} = req.body;
+    const{idbene} = req.params; 
     try {
-        await sequelize.query(`INSERT INTO PRE_NATALES(ID_BENEFICIARIO,EMBARAZO_TERMINO,EXPLIQUE_EMBARAZO,PARTO_NORMAL,EXPLIQUE_PARTO,COMPLICACIONES,EXPLIQUE_COMPLICACION) VALUES(${ID_BENEFICIARIO},'${EMBARAZO_TERMINO}', '${EXPLIQUE_EMBARAZO}','${PARTO_NORMAL}','${EXPLIQUE_PARTO}','${COMPLICACIONES}','${EXPLIQUE_COMPLICACION}')`,{type: QueryTypes.INSERT});
+        await sequelize.query(`INSERT INTO PRE_NATALES(ID_BENEFICIARIO,EMBARAZO_TERMINO,EXPLIQUE_EMBARAZO,PARTO_NORMAL,EXPLIQUE_PARTO,COMPLICACIONES,EXPLIQUE_COMPLICACION) VALUES(${idbene},'${EMBARAZO_TERMINO}', '${EXPLIQUE_EMBARAZO}','${PARTO_NORMAL}','${EXPLIQUE_PARTO}','${COMPLICACIONES}','${EXPLIQUE_COMPLICACION}')`,{type: QueryTypes.INSERT});
         res.json({message:"información prenatal de beneficiario agregada correctamente"});
     } catch (error) {
         res.json(error);
@@ -34,9 +35,10 @@ const createPrenatalesBeneficiarios = async(req, res) => {
 }
 
 const createHistorialClinico = async(req,res) =>{
-    const {ID_BENEFICIARIO,ENFERMEDAD_PADECE,MEDICAMENTOS_INGIERE,VACUNAS,AUDICION,ORFTAMOLOGICAS,APARATO_AUDITIVO,LENTES,CIRUJIAS,OTRAS} = req.body;
+    const {ENFERMEDAD_PADECE,MEDICAMENTOS_INGIERE,VACUNAS,AUDICION,ORFTAMOLOGICAS,APARATO_AUDITIVO,LENTES,CIRUJIAS,OTRAS} = req.body;
+    const {idbene} = req.params;
     try {
-        await sequelize.query(`INSERT INTO HISTORIAL_CLINICO(ID_BENEFICIARIO,ENFERMEDAD_PADECE,MEDICAMENTOS_INGIERE,VACUNAS,AUDICION,ORFTAMOLOGICAS,APARATO_AUDITIVO,LENTES,CIRUJIAS,OTRAS) VALUES(${ID_BENEFICIARIO},'${ENFERMEDAD_PADECE}','${MEDICAMENTOS_INGIERE}','${VACUNAS}','${AUDICION}','${ORFTAMOLOGICAS}','${APARATO_AUDITIVO}','${LENTES}','${CIRUJIAS}','${OTRAS}')`, {type:QueryTypes.INSERT});
+        await sequelize.query(`INSERT INTO HISTORIAL_CLINICO(ID_BENEFICIARIO,ENFERMEDAD_PADECE,MEDICAMENTOS_INGIERE,VACUNAS,AUDICION,ORFTAMOLOGICAS,APARATO_AUDITIVO,LENTES,CIRUJIAS,OTRAS) VALUES(${idbene},'${ENFERMEDAD_PADECE}','${MEDICAMENTOS_INGIERE}','${VACUNAS}','${AUDICION}','${ORFTAMOLOGICAS}','${APARATO_AUDITIVO}','${LENTES}','${CIRUJIAS}','${OTRAS}')`, {type:QueryTypes.INSERT});
         res.json({message:"información de historial clinico agregada correctamente"}); 
     } catch (error) {
         res.json(error);
@@ -44,9 +46,10 @@ const createHistorialClinico = async(req,res) =>{
 }
 
 const createPeriNatales = async(req,res) => {
-    const{ID_BENEFICIARIO,LLORO_INMEDIATAMENTE,COLORACION,INCUBADORA,COLOR} = req.body;
+    const{LLORO_INMEDIATAMENTE,COLORACION,INCUBADORA,COLOR} = req.body;
+    const {idbene} = req.params;
     try {
-        await sequelize.query(`INSERT INTO PERI_NATALES(ID_BENEFICIARIO,LLORO_INMEDIATAMENTE,COLORACION,INCUBADORA,COLOR) VALUES(${ID_BENEFICIARIO},'${LLORO_INMEDIATAMENTE}','${COLORACION}','${INCUBADORA}','${COLOR}')`, {type:QueryTypes.INSERT});
+        await sequelize.query(`INSERT INTO PERI_NATALES(ID_BENEFICIARIO,LLORO_INMEDIATAMENTE,COLORACION,INCUBADORA,COLOR) VALUES(${idbene},'${LLORO_INMEDIATAMENTE}','${COLORACION}','${INCUBADORA}','${COLOR}')`, {type:QueryTypes.INSERT});
         res.json({message:"información perinatal agregada al beneficiario correctamente"});
     } catch (error) {
         res.json(error);
@@ -54,9 +57,10 @@ const createPeriNatales = async(req,res) => {
 }
 
 const createPostNatales = async(req,res) =>{
-     const{ID_BENEFICIARIO,TRATAMIENTO,INFECCIONES,FIEBRE,CONVULCIONES,LENGUAJE,CAMINA,OBSERVACIONES} = req.body; 
+     const{TRATAMIENTO,INFECCIONES,FIEBRE,CONVULCIONES,LENGUAJE,CAMINA,OBSERVACIONES} = req.body; 
+     const{idbene} = req.params;
     try {
-        await sequelize.query(`INSERT INTO POST_NATALES(ID_BENEFICIARIO,TRATAMIENTO,INFECCIONES,FIEBRE,CONVULCIONES,LENGUAJE,CAMINA,OBSERVACIONES) VALUES(${ID_BENEFICIARIO},'${TRATAMIENTO}','${INFECCIONES}','${FIEBRE}','${CONVULCIONES}','${LENGUAJE}','${CAMINA}','${OBSERVACIONES}')`,{type:QueryTypes.INSERT});
+        await sequelize.query(`INSERT INTO POST_NATALES(ID_BENEFICIARIO,TRATAMIENTO,INFECCIONES,FIEBRE,CONVULCIONES,LENGUAJE,CAMINA,OBSERVACIONES) VALUES(${idbene},'${TRATAMIENTO}','${INFECCIONES}','${FIEBRE}','${CONVULCIONES}','${LENGUAJE}','${CAMINA}','${OBSERVACIONES}')`,{type:QueryTypes.INSERT});
         res.json({message:"información postNatal agregada al beneficiario correctamente"});
     } catch (error) {
         res.json(error);

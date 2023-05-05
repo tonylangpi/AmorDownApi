@@ -5,10 +5,10 @@ const {createBeneficiarios,createPrenatalesBeneficiarios,createHistorialClinico,
 
 router.get('/all', allBeneficiarios);
 router.post('/create', upload.array('files', 2), createBeneficiarios);
-router.post('/createPrenatales', createPrenatalesBeneficiarios);
-router.post('/createHistorialClinico',createHistorialClinico);
-router.post('/createPeriNatales', createPeriNatales);
-router.post('/createPostNatales',createPostNatales);
+router.post('/createPrenatales/:idbene', createPrenatalesBeneficiarios);
+router.post('/createHistorialClinico/:idbene',createHistorialClinico);
+router.post('/createPeriNatales/:idbene', createPeriNatales);
+router.post('/createPostNatales/:idbene',createPostNatales);
 router.post('/createEncargados', createEncargados);
 router.post('/unionBeneficiarioEncargado', unionBeneficiarioEncargado);
 
