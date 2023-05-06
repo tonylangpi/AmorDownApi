@@ -9,7 +9,7 @@ router.post('/createPrenatales/:idbene', createPrenatalesBeneficiarios);
 router.post('/createHistorialClinico/:idbene',createHistorialClinico);
 router.post('/createPeriNatales/:idbene', createPeriNatales);
 router.post('/createPostNatales/:idbene',createPostNatales);
-router.post('/createEncargados', createEncargados);
+router.post('/createEncargados/:idbene', createEncargados);
 router.post('/unionBeneficiarioEncargado', unionBeneficiarioEncargado);
 
 module.exports = router;

@@ -70,11 +70,13 @@ const createEncargados = async(req,res) =>{
       const{NOMBRE1, NOMBRE2, NOMBRE3, APELLIDO1, APELLIDO2, TELEFONO, TIPO,ESCOLARIDAD, OCUPACION,FECHA_NACIMIENTO} = req.body;
     try {
         await sequelize.query(`INSERT INTO ENCARGADO (NOMBRE1, NOMBRE2, NOMBRE3, APELLIDO1, APELLIDO2, TELEFONO, TIPO,ESCOLARIDAD, OCUPACION,FECHA_NACIMIENTO) VALUES ('${NOMBRE1}','${NOMBRE2}','${NOMBRE3}','${APELLIDO1}','${APELLIDO2}','${TELEFONO}','${TIPO}','${ESCOLARIDAD}','${OCUPACION}','${FECHA_NACIMIENTO}')`,{type: QueryTypes.INSERT});
+        const {idbene} = req.params;
         const idEncargado = await sequelize.query(`SELECT LAST_INSERT_ID() AS ID_ENCARGADO_INGRESADO`, 
         {type:QueryTypes.SELECT});
+        await sequelize.query(`INSERT INTO BENEFICIARIO_ENCARGADO(ID_BENEFICIARIO,ID_ENCARGADO) VALUES(${idbene},${idEncargado[0].ID_ENCARGADO_INGRESADO})`,{type:QueryTypes.INSERT});
+
         res.json({
-            message:"Encargado agregado correctamente",
-            idEncargado:idEncargado
+            message:"Encargado agregado correctamente"
         });
     } catch (error) {
         res.json(error);
