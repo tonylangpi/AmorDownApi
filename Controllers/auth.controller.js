@@ -25,14 +25,19 @@ const login = async(req, res) =>{
             token: null
         })
     }else {
-        connection.query('SELECT * FROM USUARIOS WHERE email = ?', [email], async (error, results) =>{
+        connection.query(`SELECT U.id, U.nombre, R.id_roles, R.nombre_rol, AU.ID_AREA, A.NOMBRE AS NOMBRE_AREA, U.contraseña, EU.id_empresa, E.direccion FROM USUARIOS U
+        inner join ROLES R ON R.id_roles = U.id_roles
+        inner join AREAS_USUARIOS AU ON AU.ID_USUARIOS = U.id
+        inner join AREAS A ON A.ID_AREA = AU.ID_AREA
+        inner join EMPRESA_USUARIO EU ON EU.id_usuario = U.id
+        inner join EMPRESA E ON E.id_empresa = EU.id_empresa
+         WHERE email =?`, [email], async (error, results) =>{
         if(error){
             console.log(error);
         }else{
             if(results.length > 0){
                 const comparar = await bcryptjs.compare(password, results[0].contraseña);
                 if(comparar){
-                    
 
                     connection.query('INSERT INTO BITACORA SET ?', {fecha_hora_inicio: fechaYHoraActualString, fecha_hora_cierre: fechaYHoraActualString, id_usuario: results[0].id});
 
@@ -41,7 +46,15 @@ const login = async(req, res) =>{
                         message: "bienvenido de nuevo",
                         auth: true,
                         token: jwt.sign({email: email}, process.env.SECRET, {expiresIn: 60 * 60 * 24 * 30}),
-                        fecha:fechaYHoraActualString
+                        fecha:fechaYHoraActualString,
+                        id: results[0].id,
+                        nombre: results[0].nombre,
+                        id_roles: results[0].id_roles,
+                        nombre_rol: results[0].nombre_rol,
+                        id_area: results[0].ID_AREA,
+                        nombre_area: results[0].NOMBRE_AREA,
+                        id_empresa: results[0].id_empresa,
+                        direccion: results[0].direccion
                 })
                 }else{
                     res.json({
