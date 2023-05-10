@@ -102,6 +102,7 @@ const allBeneficiarios = async(req,res) =>{
     }
 }
 
+
 module.exports = {
     createBeneficiarios,
     createPrenatalesBeneficiarios,
