@@ -48,7 +48,7 @@ const getUsersAndRoles = async (req, res) => {
 }
 
 const createUsers = async(req, res) => {
-    const {email, nombre, id_roles} = req.body;
+    const {email, nombre, id_roles,id_empresa,id_area} = req.body;
         const status = "1";
 
         const numeros = "0123456789";
@@ -113,34 +113,55 @@ const createUsers = async(req, res) => {
             if(error){
                 console.log(error);
             }else{ 
-                try{
-                    const mail = await transporter.sendMail({
-                        from: process.env.EMAIL,
-                        to: email,
-                        subject: 'Gracias por ser parte del grupo AMOR DOWN',
-                        html: `<h1>Bienvenid@ ${nombre}</h1>
-                        <p>Su contraseña para ingresar al sistema es:</p>
-                        <p>${password}</p>
-                        <p>Por favor no olvide cambiarla</p>`
-                    }
-                    );
-                    console.log("Email enviado");
-            }catch(error){
-                console.log(error);
-            } 
-                res.json({
-                    message: 'Se ha enviado un correo de confirmacion',
-                    auth: true,
-                    token:jwt.sign({email: email}, process.env.SECRET, {expiresIn: 60 * 60 * 24 * 30}),
-               
-                });
-            }
-        });
-        }
-        }
-    });
+                connection.query('SELECT * FROM USUARIOS WHERE email = ?', [email], async (error, results) => {
+                    if(error){
+                        console.log(error);
+                    }else{
+                        const id = results[0].id;
+
+                        connection.query('INSERT INTO EMPRESA_USUARIO SET ?', {id_usuario: id, id_empresa: id_empresa}, async (error, results) =>{
+                            if(error){
+                                console.log(error);
+                            }else{
+                                connection.query('INSERT INTO AREAS_USUARIOS SET ?', {ID_USUARIOS: id, ID_AREA: id_area}, async (error, results) =>{
+                                    if(error){
+                                        console.log(error);
+                                    }else{
+                                        
+try{
+    const mail = await transporter.sendMail({
+        from: process.env.EMAIL,
+        to: email,
+        subject: 'Gracias por ser parte del grupo AMOR DOWN',
+        html: `<h1>Bienvenid@ ${nombre}</h1>
+        <p>Su contraseña para ingresar al sistema es:</p>
+        <p>${password}</p>
+        <p>Por favor no olvide cambiarla</p>`
     }
+    );
+    console.log("Email enviado");
+}catch(error){
+console.log(error);
+} 
+                                        res.json({
+                                            message: 'Se ha enviado un correo de confirmacion',
+    auth: true,
+    token:jwt.sign({email: email}, process.env.SECRET, {expiresIn: 60 * 60 * 24 * 30}),
+                                        })
+                                    }
+                                })
+                            }
+                        })
+                    }
+                })
+            }
+        })
+                }
+            }
+        })
+        }
 }
+
 
 const updateUsers = async (req, res) => {
     const {id, email, nombre, estado} = req.body;
