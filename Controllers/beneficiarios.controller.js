@@ -102,6 +102,17 @@ const allBeneficiarios = async(req,res) =>{
     }
 }
 
+const beneficiarioArea = (req, res) => {
+    const {area} = req.params;
+    connection.query('SELECT B.ID_BENEFICIARIO, B.NOMBRE1 AS NOMBRE, B.APELLIDO1 AS APELLIDO, A.NOMBRE AS AREA FROM BENEFICIARIO B INNER JOIN BENEFICIARIO_AREAS BA ON BA.ID_BENEFICIARIO = B.ID_BENEFICIARIO INNER JOIN AREAS A ON A.ID_AREA = BA.ID_AREA WHERE A.NOMBRE = ? ',[area], (error, results) => {
+       if(error){
+           console.log(error);
+       }else{
+           res.json(results);
+       }
+   })
+
+}
 
 module.exports = {
     createBeneficiarios,
@@ -112,4 +123,5 @@ module.exports = {
     createEncargados,
     unionBeneficiarioEncargado,
     allBeneficiarios,
+    beneficiarioArea
 }
