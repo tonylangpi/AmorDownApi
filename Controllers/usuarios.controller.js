@@ -5,7 +5,7 @@ const {transporter} = require('../services/nodemailer.services');
 const jwt = require('jsonwebtoken');
 
 const getUsers = (req, res) => {
-     connection.query('Select US.id, US.nombre, US.estado from USUARIOS US', (error, results) => {
+     connection.query('Select US.id AS ID_USUARIO, US.email AS EMAIL_USUARIO, US.nombre AS NOMBRE_USUARIO, US.estado AS ESTADO_USUARIO, RO.nombre_rol AS ROL_USUARIO, A.NOMBRE AS NOMBRE_AREA, E.nombre AS NOMBRE_EMPRESA , E.direccion AS DIRECCION_EMPRESA from USUARIOS US inner join ROLES RO on US.id_roles = RO.id_roles inner join AREAS_USUARIOS AU ON AU.ID_USUARIOS = US.id INNER JOIN AREAS A ON AU.ID_AREA = A.ID_AREA INNER JOIN EMPRESA_USUARIO EU ON EU.id_usuario = US.id INNER JOIN EMPRESA E ON E.id_empresa = EU.id_empresa ORDER BY US.id ASC', (error, results) => {
         if(error){
             console.log(error);
         }else{
@@ -16,7 +16,8 @@ const getUsers = (req, res) => {
 }
 
 const getUser = (req, res) => {
-    const {id} = req.body;
+    const{id} = req.params;
+    const {} = req.body;
     connection.query('Select US.id, US.email, US.nombre, US.estado, RO.nombre_rol from USUARIOS US inner join ROLES RO on US.id_roles = RO.id_roles where id = ?', [id], (error, results) => {
         if(error){
             console.log(error);
@@ -27,8 +28,9 @@ const getUser = (req, res) => {
 }
 
 const getUserName = (req, res) => {
+    const{} = req.params;
     const {nombre} = req.body;
-    connection.query('Select US.id, US.nombre , US.estado from USUARIOS US where nombre Like ?', [nombre + "%"], (error, results) => {
+    connection.query(`Select US.id AS ID_USUARIO, US.email AS EMAIL_USUARIO, US.nombre AS NOMBRE_USUARIO, US.estado AS ESTADO_USUARIO, RO.nombre_rol AS ROL_USUARIO, A.NOMBRE AS NOMBRE_AREA, E.nombre AS NOMBRE_EMPRESA , E.direccion AS DIRECCION_EMPRESA from USUARIOS US inner join ROLES RO on US.id_roles = RO.id_roles inner join AREAS_USUARIOS AU ON AU.ID_USUARIOS = US.id INNER JOIN AREAS A ON AU.ID_AREA = A.ID_AREA INNER JOIN EMPRESA_USUARIO EU ON EU.id_usuario = US.id INNER JOIN EMPRESA E ON E.id_empresa = EU.id_empresa  where US.nombre Like '%${nombre}%' ORDER BY US.id ASC`, (error, results) => {
         if(error){
             console.log(error);
         }else{
