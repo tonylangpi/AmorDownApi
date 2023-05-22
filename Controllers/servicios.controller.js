@@ -4,7 +4,8 @@ const { QueryTypes } = require('sequelize');
 
 
 const getServicios =  (req, res) => {
-     connection.query('SELECT * FROM AREAS',(error, results) => {
+    const {NOMBRE} = req.body;
+     connection.query(`SELECT * FROM AREAS WHERE NOMBRE LIKE '%${NOMBRE}%'`,(error, results) => {
         if(error){
             console.log(error);
         }else{

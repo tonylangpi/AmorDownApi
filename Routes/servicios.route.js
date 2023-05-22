@@ -4,7 +4,7 @@ const router = express();
 const {getServicios,createServicios,updateServicios,deleteServicios,areaBeneficiarios} = require('../Controllers/servicios.controller');
 
 //rutas de CRUD sobre tabla ROLES EN BD EN LA NUBE
-router.get('/',getServicios);
+router.post('/',getServicios);
 router.post('/createServicios', createServicios);
 router.put('/updateServicios/:ID_AREA', updateServicios);
 router.delete('/deleteServicios/:ID_AREA', deleteServicios);

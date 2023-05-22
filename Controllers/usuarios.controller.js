@@ -5,7 +5,7 @@ const {transporter} = require('../services/nodemailer.services');
 const jwt = require('jsonwebtoken');
 
 const getUsers = (req, res) => {
-     connection.query('Select US.id, US.nombre, US.estado from USUARIOS US', (error, results) => {
+     connection.query('Select US.id AS ID_USUARIO, US.email AS EMAIL_USUARIO, US.nombre AS NOMBRE_USUARIO, US.estado AS ESTADO_USUARIO, RO.nombre_rol AS ROL_USUARIO, A.NOMBRE AS NOMBRE_AREA, E.nombre AS NOMBRE_EMPRESA , E.direccion AS DIRECCION_EMPRESA from USUARIOS US inner join ROLES RO on US.id_roles = RO.id_roles inner join AREAS_USUARIOS AU ON AU.ID_USUARIOS = US.id INNER JOIN AREAS A ON AU.ID_AREA = A.ID_AREA INNER JOIN EMPRESA_USUARIO EU ON EU.id_usuario = US.id INNER JOIN EMPRESA E ON E.id_empresa = EU.id_empresa ORDER BY US.id ASC', (error, results) => {
         if(error){
             console.log(error);
         }else{
@@ -16,7 +16,8 @@ const getUsers = (req, res) => {
 }
 
 const getUser = (req, res) => {
-    const {id} = req.body;
+    const{id} = req.params;
+    const {} = req.body;
     connection.query('Select US.id, US.email, US.nombre, US.estado, RO.nombre_rol from USUARIOS US inner join ROLES RO on US.id_roles = RO.id_roles where id = ?', [id], (error, results) => {
         if(error){
             console.log(error);
@@ -27,8 +28,9 @@ const getUser = (req, res) => {
 }
 
 const getUserName = (req, res) => {
+    const{} = req.params;
     const {nombre} = req.body;
-    connection.query('Select US.id, US.nombre , US.estado from USUARIOS US where nombre Like ?', [nombre + "%"], (error, results) => {
+    connection.query(`Select US.id AS ID_USUARIO, US.email AS EMAIL_USUARIO, US.nombre AS NOMBRE_USUARIO, US.estado AS ESTADO_USUARIO, RO.nombre_rol AS ROL_USUARIO, A.NOMBRE AS NOMBRE_AREA, E.nombre AS NOMBRE_EMPRESA , E.direccion AS DIRECCION_EMPRESA from USUARIOS US inner join ROLES RO on US.id_roles = RO.id_roles inner join AREAS_USUARIOS AU ON AU.ID_USUARIOS = US.id INNER JOIN AREAS A ON AU.ID_AREA = A.ID_AREA INNER JOIN EMPRESA_USUARIO EU ON EU.id_usuario = US.id INNER JOIN EMPRESA E ON E.id_empresa = EU.id_empresa  where US.nombre Like '%${nombre}%' ORDER BY US.id ASC`, (error, results) => {
         if(error){
             console.log(error);
         }else{
@@ -48,7 +50,7 @@ const getUsersAndRoles = async (req, res) => {
 }
 
 const createUsers = async(req, res) => {
-    const {email, nombre, id_roles} = req.body;
+    const {email, nombre, id_roles,id_empresa,id_area} = req.body;
         const status = "1";
 
         const numeros = "0123456789";
@@ -113,34 +115,55 @@ const createUsers = async(req, res) => {
             if(error){
                 console.log(error);
             }else{ 
-                try{
-                    const mail = await transporter.sendMail({
-                        from: process.env.EMAIL,
-                        to: email,
-                        subject: 'Gracias por ser parte del grupo AMOR DOWN',
-                        html: `<h1>Bienvenid@ ${nombre}</h1>
-                        <p>Su contraseña para ingresar al sistema es:</p>
-                        <p>${password}</p>
-                        <p>Por favor no olvide cambiarla</p>`
-                    }
-                    );
-                    console.log("Email enviado");
-            }catch(error){
-                console.log(error);
-            } 
-                res.json({
-                    message: 'Se ha enviado un correo de confirmacion',
-                    auth: true,
-                    token:jwt.sign({email: email}, process.env.SECRET, {expiresIn: 60 * 60 * 24 * 30}),
-               
-                });
-            }
-        });
-        }
-        }
-    });
+                connection.query('SELECT * FROM USUARIOS WHERE email = ?', [email], async (error, results) => {
+                    if(error){
+                        console.log(error);
+                    }else{
+                        const id = results[0].id;
+
+                        connection.query('INSERT INTO EMPRESA_USUARIO SET ?', {id_usuario: id, id_empresa: id_empresa}, async (error, results) =>{
+                            if(error){
+                                console.log(error);
+                            }else{
+                                connection.query('INSERT INTO AREAS_USUARIOS SET ?', {ID_USUARIOS: id, ID_AREA: id_area}, async (error, results) =>{
+                                    if(error){
+                                        console.log(error);
+                                    }else{
+                                        
+try{
+    const mail = await transporter.sendMail({
+        from: process.env.EMAIL,
+        to: email,
+        subject: 'Gracias por ser parte del grupo AMOR DOWN',
+        html: `<h1>Bienvenid@ ${nombre}</h1>
+        <p>Su contraseña para ingresar al sistema es:</p>
+        <p>${password}</p>
+        <p>Por favor no olvide cambiarla</p>`
     }
+    );
+    console.log("Email enviado");
+}catch(error){
+console.log(error);
+} 
+                                        res.json({
+                                            message: 'Se ha enviado un correo de confirmacion',
+    auth: true,
+    token:jwt.sign({email: email}, process.env.SECRET, {expiresIn: 60 * 60 * 24 * 30}),
+                                        })
+                                    }
+                                })
+                            }
+                        })
+                    }
+                })
+            }
+        })
+                }
+            }
+        })
+        }
 }
+
 
 const updateUsers = async (req, res) => {
     const {id, email, nombre, estado} = req.body;
