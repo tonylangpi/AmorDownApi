@@ -94,12 +94,21 @@ const unionBeneficiarioEncargado = async (req,res) =>{
 }
 
 const allBeneficiarios = async(req,res) =>{
-    try {
-       const beneficiarios = await sequelize.query(`SELECT * FROM BENEFICIARIO`, {type: QueryTypes.SELECT});
-        res.json({data:beneficiarios});
-    } catch (error) {
-        res.json(error)
-    }
+    // const {nombre} = req.body;
+    // try {
+    //    const beneficiarios = await sequelize.query(`SELECT * FROM BENEFICIARIO WHERE CONCAT(NOMBRE1, ' ' ,NOMBRE2, ' ' ,APELLIDO1, ' ' ,APELLIDO2) LIKE '%${nombre}%'`, {type: QueryTypes.SELECT});
+    //     res.json({data:beneficiarios});
+    // } catch (error) {
+    //     res.json(error)
+    // }
+    const { nombre } = req.body;
+    connection.query(`SELECT * FROM BENEFICIARIO WHERE CONCAT(NOMBRE1, ' ' ,NOMBRE2, ' ' ,APELLIDO1, ' ' ,APELLIDO2) LIKE '%${nombre}%'`, (error, results) => {
+        if (error) {
+            console.log(error);
+        } else {
+            res.json(results);
+        }
+    })
 }
 
 const beneficiarioArea = (req, res) => {
