@@ -5,7 +5,7 @@ const {createBeneficiarios,createPrenatalesBeneficiarios,createHistorialClinico,
 
 router.get('/all', allBeneficiarios);
 router.post('/allByName', allByName);
-router.post('/create/:idEmpresa', upload.array('files', 2), createBeneficiarios);
+router.post('/create', upload.array('files', 2), createBeneficiarios);
 router.post('/createPrenatales/:idbene', createPrenatalesBeneficiarios);
 router.post('/createHistorialClinico/:idbene',createHistorialClinico);
 router.post('/createPeriNatales/:idbene', createPeriNatales);
