@@ -1,14 +1,16 @@
 const { sequelize, connection } = require("../Database/bd");
 const { QueryTypes } = require('sequelize');
+const jwt = require('jsonwebtoken');
 //const subirArchivos = require('../Middleware/multer'); 
 
 
 const createBeneficiarios = async (req, res) => {
 
-    const { NOMBRE1, NOMBRE2, NOMBRE3, APELLIDO1, APELLIDO2, ESCOLARIDAD, SEXO, FECHA_NACIMIENTO, DIRECCION, REFERENCIA, NUMERO_HERMANOS, NUMERO_OCUPA } = req.body;
-    const { idEmpresa } = req.params;
+    const { token, NOMBRE1, NOMBRE2, NOMBRE3, APELLIDO1, APELLIDO2, ESCOLARIDAD, SEXO, FECHA_NACIMIENTO, DIRECCION, REFERENCIA, NUMERO_HERMANOS, NUMERO_OCUPA } = req.body;
+    const decoded = jwt.verify(token, process.env.SECRET);
+    
     try {
-        await sequelize.query(`INSERT INTO BENEFICIARIO (ID_EMPRESA,NOMBRE1,NOMBRE2,NOMBRE3,APELLIDO1,APELLIDO2,ESCOLARIDAD,SEXO,FECHA_NACIMIENTO,FECHA_INGRESO,DIRECCION,REFERENCIA,ESTADO,NUMERO_HERMANOS,NUMERO_OCUPA,RUTA_ARCH1,RUTA_ARCH2) VALUES (${idEmpresa},'${NOMBRE1}','${NOMBRE2}','${NOMBRE3}','${APELLIDO1}','${APELLIDO2}',
+        await sequelize.query(`INSERT INTO BENEFICIARIO (ID_EMPRESA,NOMBRE1,NOMBRE2,NOMBRE3,APELLIDO1,APELLIDO2,ESCOLARIDAD,SEXO,FECHA_NACIMIENTO,FECHA_INGRESO,DIRECCION,REFERENCIA,ESTADO,NUMERO_HERMANOS,NUMERO_OCUPA,RUTA_ARCH1,RUTA_ARCH2) VALUES (${decoded.id_empresa},'${NOMBRE1}','${NOMBRE2}','${NOMBRE3}','${APELLIDO1}','${APELLIDO2}',
       '${ESCOLARIDAD}','${SEXO}','${FECHA_NACIMIENTO}',CURDATE(),'${DIRECCION}','${REFERENCIA}', 'ACTIVO', ${NUMERO_HERMANOS},${NUMERO_OCUPA},'${req?.files[0]?.filename}','${req?.files[1]?.filename}')`, { type: QueryTypes.INSERT });
 
         const id = await sequelize.query(`SELECT LAST_INSERT_ID() AS ID_BENE_INGRESADO`,
@@ -113,8 +115,9 @@ const allByName = (req, res) => {
     })
 }
 const beneficiarioArea = (req, res) => {
-    const { area } = req.params;
-    connection.query('SELECT B.ID_BENEFICIARIO, B.NOMBRE1 AS NOMBRE, B.APELLIDO1 AS APELLIDO, A.NOMBRE AS AREA FROM BENEFICIARIO B INNER JOIN BENEFICIARIO_AREAS BA ON BA.ID_BENEFICIARIO = B.ID_BENEFICIARIO INNER JOIN AREAS A ON A.ID_AREA = BA.ID_AREA WHERE A.NOMBRE = ? ', [area], (error, results) => {
+    const token = req.params.token;
+    const decoded = jwt.verify(token, process.env.SECRET);
+    connection.query('SELECT B.ID_BENEFICIARIO, B.NOMBRE1 AS NOMBRE, B.APELLIDO1 AS APELLIDO, A.NOMBRE AS AREA FROM BENEFICIARIO B INNER JOIN BENEFICIARIO_AREAS BA ON BA.ID_BENEFICIARIO = B.ID_BENEFICIARIO INNER JOIN AREAS A ON A.ID_AREA = BA.ID_AREA WHERE A.NOMBRE = ? ', [decoded.nombre_area], (error, results) => {
         if (error) {
             console.log(error);
         } else {
