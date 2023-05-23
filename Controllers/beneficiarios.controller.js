@@ -97,7 +97,33 @@ const unionBeneficiarioEncargado = async (req, res) => {
 
 const allBeneficiarios = async (req, res) => {
     try {
-        const beneficiarios = await sequelize.query(`SELECT * FROM BENEFICIARIO`, { type: QueryTypes.SELECT });
+        const beneficiarios = await sequelize.query(`
+        SELECT 
+        ID_BENEFICIARIO, 
+        ID_EMPRESA, 
+        NOMBRE1, 
+        NOMBRE2, 
+        NOMBRE3, 
+        APELLIDO1,
+        APELLIDO2,
+        ESCOLARIDAD,
+        SEXO,
+        FECHA_NACIMIENTO,
+        FECHA_INGRESO,
+        DIRECCION,
+        REFERENCIA,
+        ESTADO,
+        NUMERO_HERMANOS,
+        NUMERO_OCUPA,
+        RUTA_ARCH1,
+        RUTA_ARCH2,
+        ROUND(DATEDIFF(CURDATE(),FECHA_NACIMIENTO)/365) AS EDAD,
+          CASE
+                WHEN DATEDIFF(CURDATE(), fecha_nacimiento) / 365 < 18 THEN 'Joven'
+                WHEN DATEDIFF(CURDATE(), fecha_nacimiento) / 365 < 65 THEN 'Adulto'
+                ELSE 'Mayor'
+            END AS grupo_edad
+         FROM BENEFICIARIO; `, { type: QueryTypes.SELECT });
         res.json(beneficiarios);
     } catch (error) {
         res.json(error)
@@ -106,7 +132,33 @@ const allBeneficiarios = async (req, res) => {
 }
 const allByName = (req, res) => {
     const { nombre } = req.body;
-    connection.query(`SELECT * FROM BENEFICIARIO WHERE CONCAT(NOMBRE1, ' ' ,NOMBRE2, ' ' ,APELLIDO1, ' ' ,APELLIDO2) LIKE '%${nombre}%'`, (error, results) => {
+    connection.query(`SELECT 
+    ID_BENEFICIARIO, 
+    ID_EMPRESA, 
+    NOMBRE1, 
+    NOMBRE2, 
+    NOMBRE3, 
+    APELLIDO1,
+    APELLIDO2,
+    ESCOLARIDAD,
+    SEXO,
+    FECHA_NACIMIENTO,
+    FECHA_INGRESO,
+    DIRECCION,
+    REFERENCIA,
+    ESTADO,
+    NUMERO_HERMANOS,
+    NUMERO_OCUPA,
+    RUTA_ARCH1,
+    RUTA_ARCH2,
+    ROUND(DATEDIFF(CURDATE(),FECHA_NACIMIENTO)/365) AS EDAD,
+      CASE
+            WHEN DATEDIFF(CURDATE(), fecha_nacimiento) / 365 < 18 THEN 'Joven'
+            WHEN DATEDIFF(CURDATE(), fecha_nacimiento) / 365 < 65 THEN 'Adulto'
+            ELSE 'Mayor'
+        END AS grupo_edad
+     FROM BENEFICIARIO
+      WHERE CONCAT(NOMBRE1, ' ' ,NOMBRE2, ' ' ,APELLIDO1, ' ' ,APELLIDO2) LIKE '%${nombre}%'`, (error, results) => {
         if (error) {
             console.log(error);
         } else {
