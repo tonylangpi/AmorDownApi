@@ -12,7 +12,7 @@ router.post('/createPeriNatales/:idbene', createPeriNatales);
 router.post('/createPostNatales/:idbene',createPostNatales);
 router.post('/createEncargados/:idbene', createEncargados);
 router.post('/unionBeneficiarioEncargado', unionBeneficiarioEncargado);
-router.get('/beneficiariosPorArea/:area', beneficiarioArea);
+router.get('/beneficiariosPorArea/:token', beneficiarioArea);
 router.post('/updateInfoBeneGeneral/:idBene', updateInfoBene);
 router.post('/updateInfoBeneHistorialClinico/:idBene', updateInfoBeneHistorialClinico);
 router.post('/updateInfoBenePrenatales/:idBene', updateInfoBenePrenatales);

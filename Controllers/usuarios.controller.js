@@ -204,7 +204,8 @@ const updateUsers = async (req, res) => {
 }
 
 const updateUsersPassword = async (req, res) => {
-    const { id, password } = req.body;
+    const { token, password } = req.body;
+    const decoded = jwt.verify(token, process.env.SECRET);
     const estado_contraseña = 1;
     const passregex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/;
     let passwordHash = await bcrypt.hash(password, 10);
@@ -223,7 +224,7 @@ const updateUsersPassword = async (req, res) => {
         })
     } else {
 
-        connection.query('UPDATE USUARIOS SET ? WHERE id = ?', [{ contraseña: passwordHash, ESTADO_CONTRASEÑA:estado_contraseña }, id], (error, results) => {
+        connection.query('UPDATE USUARIOS SET ? WHERE id = ?', [{ contraseña: passwordHash, ESTADO_CONTRASEÑA:estado_contraseña }, decoded.id], (error, results) => {
             if (error) {
                 console.log(error);
             } else {

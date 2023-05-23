@@ -46,16 +46,22 @@ const login = async (req, res) => {
                         res.json({
                             message: "bienvenido de nuevo",
                             auth: true,
-                            token: jwt.sign({ email: email }, process.env.SECRET, { expiresIn: 60 * 60 * 24 * 30 }),
-                            fecha: fechaYHoraActualString,
-                            id: results[0].id,
-                            nombre: results[0].nombre,
-                            id_roles: results[0].id_roles,
-                            nombre_rol: results[0].nombre_rol,
-                            id_area: results[0].ID_AREA,
-                            nombre_area: results[0].NOMBRE_AREA,
-                            id_empresa: results[0].id_empresa,
-                            direccion: results[0].direccion
+                            token: jwt.sign({
+                                email: email,
+                                fecha: fechaYHoraActualString,
+                                id: results[0].id,
+                                nombre: results[0].nombre,
+                                id_roles: results[0].id_roles,
+                                nombre_rol: results[0].nombre_rol,
+                                id_area: results[0].ID_AREA,
+                                nombre_area: results[0].NOMBRE_AREA,
+                                id_empresa: results[0].id_empresa,
+                                direccion: results[0].direccion, 
+                                nivel: results[0].NIVEL
+                                }, process.env.SECRET, { expiresIn: 60 * 60 * 24 * 30 }),
+                                nombre: results[0].nombre,
+                                nivel: results[0].NIVEL,
+                                nombre_rol: results[0].nombre_rol
                         })
                     } else {
                         res.json({
@@ -77,12 +83,13 @@ const login = async (req, res) => {
 }
 
 const logout = (req, res) => {
-    let { fecha } = req.body;
+    const { token } = req.body;
+    const decoded = jwt.verify(token, process.env.SECRET);
     const fechaActual = new Date();
     const fechaYHoraActualString = fechaActual.toLocaleDateString() + ' ' + fechaActual.getHours() + ':' + fechaActual.getMinutes() + ':' + fechaActual.getSeconds();
 
 
-    connection.query('UPDATE BITACORA SET ? WHERE fecha_hora_inicio = ?', [{ fecha_hora_cierre: fechaYHoraActualString }, fecha]);
+    connection.query('UPDATE BITACORA SET ? WHERE fecha_hora_inicio = ?', [{ fecha_hora_cierre: fechaYHoraActualString }, decoded.fecha]);
 
     res.json({
         message: "Sesion cerrada",
@@ -174,16 +181,27 @@ const mailRecoverPassword = async (req, res) => {
 }
 
 const auth = (req, res, next) => {
-    const { token } = req.body;
+    const { token, nivel } = req.body;
 
     if (token) {
 
         try {
             const decoded = jwt.verify(token, process.env.SECRET);
+            if (decoded.nivel == nivel) {
+
             res.json({
                 message: "Token valido",
-                auth: true
+                auth: true,
+                datos: decoded
             });
+        } else {
+            res.json({
+
+                message: "No autorizado",
+                auth: false
+            });
+        }
+
             //quiero retornar verdadero para que el middleware de la ruta pueda continuar
             next();
         } catch (error) {
