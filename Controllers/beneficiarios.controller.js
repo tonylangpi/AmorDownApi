@@ -303,7 +303,7 @@ const buscarHistorialClinicoBene = (req, res) => {
     });
 }
 const buscarPrenatalesBene = (req, res) => {
-    const { idBene } = req.parmas;
+    const { idBene } = req.params;
     connection.query(`SELECT 
     PRE.EMBARAZO_TERMINO,
     PRE.EXPLIQUE_EMBARAZO,
