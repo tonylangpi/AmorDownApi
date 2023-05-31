@@ -265,7 +265,7 @@ const buscarEncargadoBene = (req, res) => {
      E.TIPO,
      E.ESCOLARIDAD, 
      E.OCUPACION,
-     E.FECHA_NACIMIENTO
+     Date_Format(E.FECHA_NACIMIENTO, '%Y-%m-%d') as FECHA_NACIMIENTO
      FROM BENEFICIARIO_ENCARGADO BE 
     INNER JOIN BENEFICIARIO B ON B.ID_BENEFICIARIO = BE.ID_BENEFICIARIO
     INNER JOIN ENCARGADO E ON E.ID_ENCARGADO = BE.ID_ENCARGADO
@@ -371,6 +371,17 @@ const inactivarBeneficiario = (req, res) => {
         }
     });
 }
+
+const activarBeneficiario = (req, res) => {
+    const { idBene } = req.params;
+    connection.query(`UPDATE BENEFICIARIO SET ESTADO = 'ACTIVO' WHERE ID_BENEFICIARIO = ?`, [idBene], (error, results) => {
+        if (error) {
+            console.log(error);
+        } else {
+            res.json(results);
+        }
+    });
+}
 module.exports = {
     createBeneficiarios,
     createPrenatalesBeneficiarios,
@@ -394,4 +405,5 @@ module.exports = {
     buscarPerinatalesBene,
     buscarPostNatalesBene,
     inactivarBeneficiario,
+    activarBeneficiario,
 }
