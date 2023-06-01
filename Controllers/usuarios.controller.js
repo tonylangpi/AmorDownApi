@@ -255,6 +255,30 @@ const inactivateUsers = async (req, res) => {
     );
 }
 
+const getLevels = async (req, res) => {
+    connection.query('SELECT * FROM NIVELES', (error, results) => {
+        if (error) {
+            console.log(error);
+        } else {
+            res.json(
+                results
+            );
+        }
+    })
+}
+
+const getCompany = async (req, res) => {
+    connection.query('SELECT * FROM EMPRESA', (error, results) => {
+        if (error) {
+            console.log(error);
+        } else {
+            res.json(
+                results
+            );
+        }
+    })
+}
+
 module.exports = {
     getUsers,
     getUser,
@@ -262,5 +286,7 @@ module.exports = {
     createUsers,
     updateUsers,
     updateUsersPassword,
-    inactivateUsers
+    inactivateUsers,
+    getLevels,
+    getCompany
 }

@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express();
 const {upload} = require('../services/multer.services');
-const {createBeneficiarios,createPrenatalesBeneficiarios,createHistorialClinico,createPeriNatales,createPostNatales,createEncargados,unionBeneficiarioEncargado, allBeneficiarios, beneficiarioArea,allByName,updateInfoBene,updateInfoBeneHistorialClinico,updateInfoBenePrenatales,updateInfoBenePeriNatales,updateInfoBenePostNatal,updateInfoBeneEncargado, buscarEncargadoBene,buscarHistorialClinicoBene,buscarPrenatalesBene,buscarPerinatalesBene,buscarPostNatalesBene,inactivarBeneficiario} = require('../Controllers/beneficiarios.controller');
+const {createBeneficiarios,createPrenatalesBeneficiarios,createHistorialClinico,createPeriNatales,createPostNatales,createEncargados,unionBeneficiarioEncargado, allBeneficiarios, beneficiarioArea,allByName,updateInfoBene,updateInfoBeneHistorialClinico,updateInfoBenePrenatales,updateInfoBenePeriNatales,updateInfoBenePostNatal,updateInfoBeneEncargado, buscarEncargadoBene,buscarHistorialClinicoBene,buscarPrenatalesBene,buscarPerinatalesBene,buscarPostNatalesBene,inactivarBeneficiario, activarBeneficiario} = require('../Controllers/beneficiarios.controller');
 
 router.get('/all', allBeneficiarios);
 router.post('/allByName', allByName);
-router.post('/create/:idEmpresa', upload.array('files', 2), createBeneficiarios);
+router.post('/create', upload.array('files', 2), createBeneficiarios);
 router.post('/createPrenatales/:idbene', createPrenatalesBeneficiarios);
 router.post('/createHistorialClinico/:idbene',createHistorialClinico);
 router.post('/createPeriNatales/:idbene', createPeriNatales);
@@ -25,4 +25,5 @@ router.get('/buscarPrenatalesBene/:idBene',buscarPrenatalesBene);
 router.get('/buscarPerinatalesBene/:idBene',buscarPerinatalesBene);
 router.get('/buscarPostNatalesBene/:idBene',buscarPostNatalesBene);
 router.post('/inactivarBeneficiario/:idBene', inactivarBeneficiario);
+router.post('/activarBeneficiario/:idBene', activarBeneficiario);
 module.exports = router;

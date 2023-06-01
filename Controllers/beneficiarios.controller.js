@@ -6,8 +6,8 @@ const jwt = require('jsonwebtoken');
 
 const createBeneficiarios = async (req, res) => {
 
-    const { token, NOMBRE1, NOMBRE2, NOMBRE3, APELLIDO1, APELLIDO2, ESCOLARIDAD, SEXO, FECHA_NACIMIENTO, DIRECCION, REFERENCIA, NUMERO_HERMANOS, NUMERO_OCUPA } = req.body;
-    const decoded = jwt.verify(token, process.env.SECRET);
+    const { TOKEN, NOMBRE1, NOMBRE2, NOMBRE3, APELLIDO1, APELLIDO2, ESCOLARIDAD, SEXO, FECHA_NACIMIENTO, DIRECCION, REFERENCIA, NUMERO_HERMANOS, NUMERO_OCUPA } = req.body;
+    const decoded = jwt.verify(TOKEN, process.env.SECRET);
     
     try {
         await sequelize.query(`INSERT INTO BENEFICIARIO (ID_EMPRESA,NOMBRE1,NOMBRE2,NOMBRE3,APELLIDO1,APELLIDO2,ESCOLARIDAD,SEXO,FECHA_NACIMIENTO,FECHA_INGRESO,DIRECCION,REFERENCIA,ESTADO,NUMERO_HERMANOS,NUMERO_OCUPA,RUTA_ARCH1,RUTA_ARCH2) VALUES (${decoded.id_empresa},'${NOMBRE1}','${NOMBRE2}','${NOMBRE3}','${APELLIDO1}','${APELLIDO2}',
@@ -265,7 +265,7 @@ const buscarEncargadoBene = (req, res) => {
      E.TIPO,
      E.ESCOLARIDAD, 
      E.OCUPACION,
-     E.FECHA_NACIMIENTO
+     Date_Format(E.FECHA_NACIMIENTO, '%Y-%m-%d') as FECHA_NACIMIENTO
      FROM BENEFICIARIO_ENCARGADO BE 
     INNER JOIN BENEFICIARIO B ON B.ID_BENEFICIARIO = BE.ID_BENEFICIARIO
     INNER JOIN ENCARGADO E ON E.ID_ENCARGADO = BE.ID_ENCARGADO
@@ -303,7 +303,7 @@ const buscarHistorialClinicoBene = (req, res) => {
     });
 }
 const buscarPrenatalesBene = (req, res) => {
-    const { idBene } = req.parmas;
+    const { idBene } = req.params;
     connection.query(`SELECT 
     PRE.EMBARAZO_TERMINO,
     PRE.EXPLIQUE_EMBARAZO,
@@ -371,6 +371,17 @@ const inactivarBeneficiario = (req, res) => {
         }
     });
 }
+
+const activarBeneficiario = (req, res) => {
+    const { idBene } = req.params;
+    connection.query(`UPDATE BENEFICIARIO SET ESTADO = 'ACTIVO' WHERE ID_BENEFICIARIO = ?`, [idBene], (error, results) => {
+        if (error) {
+            console.log(error);
+        } else {
+            res.json(results);
+        }
+    });
+}
 module.exports = {
     createBeneficiarios,
     createPrenatalesBeneficiarios,
@@ -394,4 +405,5 @@ module.exports = {
     buscarPerinatalesBene,
     buscarPostNatalesBene,
     inactivarBeneficiario,
+    activarBeneficiario,
 }
