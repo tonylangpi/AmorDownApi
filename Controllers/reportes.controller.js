@@ -91,21 +91,23 @@ const reporteCuantitativo = (req,res) =>{
       if(formatoFecha.test(desde) && formatoFecha.test(hasta)){
         connection.query(`
         SELECT 
-        CONCAT(B.NOMBRE1, ' ', B.NOMBRE2)AS NOMBRES,
-        CONCAT(B.APELLIDO1, ' ', B.APELLIDO2, ' ') AS APELLIDOS, 
+        CONCAT(B.NOMBRE1, ' ', B.NOMBRE2) AS NOMBRES,
+        CONCAT(B.APELLIDO1, ' ', B.APELLIDO2) AS APELLIDOS, 
         B.SEXO, 
-        TIMESTAMPDIFF(YEAR, B.FECHA_NACIMIENTO, 
-        CURDATE()) AS EDAD,
+        TIMESTAMPDIFF(YEAR, B.FECHA_NACIMIENTO, CURDATE()) AS EDAD,
         CASE 
-        WHEN TIMESTAMPDIFF(YEAR, B.FECHA_NACIMIENTO, CURDATE()) > 18 THEN 'ADULTO'
-        ELSE 'NIÑO'  
-        END AS 'CLASIFICACION',
-        HC.DIAGNOSTICO, HC.DISCAPACIDAD, COUNT(SB.ID_SESION_BENEFICIARIO) AS ASISTENCIA
-        FROM SESIONES_BENEFICIARIO SB
-        INNER JOIN BENEFICIARIO B ON SB.ID_BENEFICIARIO = B.ID_BENEFICIARIO
-        INNER JOIN HISTORIAL_CLINICO HC ON B.ID_BENEFICIARIO = HC.ID_BENEFICIARIO 
-        WHERE SB.FECHA >= ? AND SB.FECHA <= ?
-        GROUP BY NOMBRES, APELLIDOS, B.SEXO, EDAD, CLASIFICACION, DIAGNOSTICO, DISCAPACIDAD `,[desde,hasta], (error,results) =>{
+          WHEN TIMESTAMPDIFF(YEAR, B.FECHA_NACIMIENTO, CURDATE()) > 18 THEN 'ADULTO'
+          ELSE 'NIÑO'  
+        END AS CLASIFICACION,
+        HC.DIAGNOSTICO,
+        HC.DISCAPACIDAD,
+        COUNT(SB.ID_SESION_BENEFICIARIO) AS ASISTENCIA
+      FROM SESIONES_BENEFICIARIO SB
+      INNER JOIN BENEFICIARIO B ON SB.ID_BENEFICIARIO = B.ID_BENEFICIARIO
+      INNER JOIN HISTORIAL_CLINICO HC ON B.ID_BENEFICIARIO = HC.ID_BENEFICIARIO 
+      WHERE SB.FECHA BETWEEN ? AND ?
+      GROUP BY NOMBRES, APELLIDOS, B.SEXO, EDAD, CLASIFICACION, DIAGNOSTICO, DISCAPACIDAD;
+       `,[desde,hasta], (error,results) =>{
             if(error){
                 console.log(error);
             }else{
@@ -121,71 +123,214 @@ const reporteCuantitativo = (req,res) =>{
     }
 }
 const reporteF9 = (req,res) =>{
-     const{desde, hasta} = req.body; 
+    const{desde, hasta} = req.body;
     const formatoFecha = /^\d{4}-\d{2}-\d{2}$/;//regex para validar que la fecha venga año mes dia.
     try {
-        connection.query(`
-        CREATE TEMPORARY TABLE IF NOT EXISTS INFORME AS (
-            SELECT SB.FECHA, 
-            B.REFERENCIA, 
-            CONCAT(B.NOMBRE1, ' ', B.NOMBRE2) AS NOMBRES,
-            CONCAT(B.APELLIDO1, ' ', B.APELLIDO2, ' ') AS APELLIDOS, 
-            B.DIRECCION, 
-            B.SEXO,
-            TIMESTAMPDIFF(YEAR, B.FECHA_NACIMIENTO, CURDATE()) AS EDAD, 
-            HC.DISCAPACIDAD, 
-            B.ESCOLARIDAD, 
-            SB.TIPO_SESION, 
-            HC.DIAGNOSTICO, 
-            A.NOMBRE AS SERVICIO_RECIBIDO
-            FROM SESIONES_BENEFICIARIO SB
-            INNER JOIN BENEFICIARIO B ON SB.ID_BENEFICIARIO = B.ID_BENEFICIARIO
-            INNER JOIN HISTORIAL_CLINICO HC ON B.ID_BENEFICIARIO = HC.ID_BENEFICIARIO 
-            INNER JOIN USUARIOS U ON SB.ID_USUARIO = U.ID
-            INNER JOIN AREAS_USUARIOS AU ON U.ID = ID_USUARIO
-            INNER JOIN AREAS A ON AU.ID_AREA = A.ID_AREA
-            GROUP BY FECHA, REFERENCIA, NOMBRES, APELLIDOS, DIRECCION, SEXO, EDAD, DISCAPACIDAD, ESCOLARIDAD,TIPO_SESION, DIAGNOSTICO, SERVICIO_RECIBIDO)
-        `,(error,results) =>{
-            if(error){
-                console.log(error);
-            }else{
-                if(formatoFecha.test(desde) && formatoFecha.test(hasta)){
-                    connection.query(`
-                        SELECT 
-                        GROUP_CONCAT(DAY(FECHA) SEPARATOR ', ') AS FECHA_DIAS,
-                        REFERENCIA, 
-                        NOMBRES, 
-                        APELLIDOS, 
-                        DIRECCION, 
-                        SEXO, 
-                        EDAD, 
-                        DISCAPACIDAD, 
-                        ESCOLARIDAD, 
-                        GROUP_CONCAT(TIPO_SESION SEPARATOR ', ') AS TIPO_SESION,
-                        DIAGNOSTICO, 
-                        GROUP_CONCAT(SERVICIO_RECIBIDO SEPARATOR ', ') AS SERVICIO_RECIBIDO  
-                        FROM INFORME
-                        WHERE FECHA >= ? AND FECHA <= ?
-                        GROUP BY NOMBRES,REFERENCIA, APELLIDOS, DIRECCION, SEXO, EDAD, DISCAPACIDAD, ESCOLARIDAD, DIAGNOSTICO `,[desde,hasta], (error,results) =>{
-                        if(error){
-                            console.log(error);
-                        }else{
-                            res.json(results);
-                        }
-                    });
-                  }else{
-                    res.json({mensaje:"formato de fecha incorrecto"});
-                  }
-            }
-        });
+        if(formatoFecha.test(desde) && formatoFecha.test(hasta)){
+            connection.query('DROP TEMPORARY TABLE IF EXISTS INFORME;',(error,results) =>{
+                    if(error){
+                        console.log(error);
+                    }else{
+                        connection.query(`CREATE TEMPORARY TABLE INFORME AS (
+                            SELECT SB.FECHA, 
+                              B.REFERENCIA, 
+                              CONCAT(B.NOMBRE1, ' ', B.NOMBRE2) AS NOMBRES,
+                              CONCAT(B.APELLIDO1, ' ', B.APELLIDO2) AS APELLIDOS, 
+                              B.DIRECCION, 
+                              B.SEXO,
+                              TIMESTAMPDIFF(YEAR, B.FECHA_NACIMIENTO, CURDATE()) AS EDAD, 
+                              HC.DISCAPACIDAD, 
+                              B.ESCOLARIDAD, 
+                              SB.TIPO_SESION, 
+                              HC.DIAGNOSTICO, 
+                              A.NOMBRE AS SERVICIO_RECIBIDO
+                            FROM SESIONES_BENEFICIARIO SB
+                            INNER JOIN BENEFICIARIO B ON SB.ID_BENEFICIARIO = B.ID_BENEFICIARIO
+                            INNER JOIN HISTORIAL_CLINICO HC ON B.ID_BENEFICIARIO = HC.ID_BENEFICIARIO 
+                            INNER JOIN USUARIOS U ON SB.ID_USUARIO = U.ID
+                            INNER JOIN AREAS_USUARIOS AU ON U.ID = ID_USUARIO
+                            INNER JOIN AREAS A ON AU.ID_AREA = A.ID_AREA
+                            WHERE SB.FECHA BETWEEN ? AND ?
+                            GROUP BY FECHA, REFERENCIA, NOMBRES, APELLIDOS, DIRECCION, SEXO, EDAD, DISCAPACIDAD, ESCOLARIDAD, TIPO_SESION, DIAGNOSTICO, SERVICIO_RECIBIDO
+                          );` ,[desde,hasta],(error,results) =>{
+                            if(error){
+                                console.log(error);
+                            }else{
+                                connection.query(`SELECT 
+                                GROUP_CONCAT(DISTINCT DAY(FECHA) SEPARATOR ', ') AS FECHA_DIAS,
+                                REFERENCIA, 
+                                NOMBRES, 
+                                APELLIDOS, 
+                                DIRECCION, 
+                                SEXO, 
+                                EDAD, 
+                                DISCAPACIDAD, 
+                                ESCOLARIDAD, 
+                                GROUP_CONCAT(DISTINCT TIPO_SESION SEPARATOR ', ') AS TIPO_SESION,
+                                DIAGNOSTICO, 
+                                GROUP_CONCAT(DISTINCT SERVICIO_RECIBIDO SEPARATOR ', ') AS SERVICIO_RECIBIDO  
+                              FROM INFORME
+                              GROUP BY REFERENCIA, NOMBRES, APELLIDOS, DIRECCION, SEXO, EDAD, DISCAPACIDAD, ESCOLARIDAD, DIAGNOSTICO;`
+                                ,(error,results) =>{
+                                    if(error){
+                                        console.log(error);
+                                    }else{
+                                        res.json(results);
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+        }else{
+            res.json({mensaje:"formato de fecha incorrecto"});
+        }
     } catch (error) {
-        res.send(error); 
+
     }
 }
+
+
+const reporteEstadistico = (req,res) =>{
+    const{desde, hasta} = req.body;
+    const formatoFecha = /^\d{4}-\d{2}-\d{2}$/;//regex para validar que la fecha venga año mes dia.
+    try {
+        if(formatoFecha.test(desde) && formatoFecha.test(hasta)){
+            connection.query('DROP TEMPORARY TABLE IF EXISTS ESTADISTICA;',(error,results) =>{
+                    if(error){
+                        console.log(error);
+                    }else{
+                        connection.query('CREATE TEMPORARY TABLE ESTADISTICA AS( SELECT B.ID_BENEFICIARIO, E.NOMBRE AS EMPRESA, B.SEXO, TIMESTAMPDIFF(YEAR, B.FECHA_NACIMIENTO, CURDATE()) AS EDAD FROM SESIONES_BENEFICIARIO SB INNER JOIN BENEFICIARIO B ON SB.ID_BENEFICIARIO = B.ID_BENEFICIARIO INNER JOIN EMPRESA E ON B.ID_EMPRESA = E.ID_EMPRESA WHERE FECHA BETWEEN ? AND ? GROUP BY ID_BENEFICIARIO, EMPRESA, SEXO, EDAD );' ,[desde,hasta],(error,results) =>{
+                            if(error){
+                                console.log(error);
+                            }else{
+                                connection.query(`SELECT
+                                    EMPRESA, 
+                                    CASE
+                                      WHEN EDAD >= 0 AND EDAD <= 16 THEN '0-16'
+                                      WHEN EDAD >= 17 AND EDAD <= 30 THEN '17-30'
+                                      WHEN EDAD >= 31 AND EDAD <= 47 THEN '31-47'
+                                      WHEN EDAD >= 48 THEN '48+'
+                                    END AS RANGO,
+                                    COUNT(CASE WHEN SEXO = 'M' THEN 1 END) AS HOMBRES,
+                                    COUNT(CASE WHEN SEXO = 'F' THEN 1 END) AS MUJERES
+                                  FROM ESTADISTICA 
+                                  WHERE EDAD >= 0 AND EDAD <= 48
+                                  GROUP BY EMPRESA, RANGO;`
+                                ,(error,results) =>{
+                                    if(error){
+                                        console.log(error);
+                                    }else{
+                                        res.json(results);
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+        }else{
+            res.json({mensaje:"formato de fecha incorrecto"});
+        }
+    } catch (error) {
+
+    }
+}
+
+
+const reporteCualitativo = (req,res) =>{
+    const{desde, hasta} = req.body;
+    const formatoFecha = /^\d{4}-\d{2}-\d{2}$/;//regex para validar que la fecha venga año mes dia.
+    try {
+        if(formatoFecha.test(desde) && formatoFecha.test(hasta)){
+            connection.query('DROP TEMPORARY TABLE IF EXISTS CUALITATIVO;',(error,results) =>{
+                    if(error){
+                        console.log(error);
+                    }else{
+                        connection.query(`CREATE TEMPORARY TABLE CUALITATIVO AS (
+                            SELECT B.ID_BENEFICIARIO, E.NOMBRE AS EMPRESA, A.NOMBRE AS AREA, B.SEXO, TIMESTAMPDIFF(YEAR, B.FECHA_NACIMIENTO, CURDATE()) AS EDAD  
+                            FROM SESIONES_BENEFICIARIO SB
+                            INNER JOIN BENEFICIARIO B ON SB.ID_BENEFICIARIO = B.ID_BENEFICIARIO
+                            INNER JOIN EMPRESA E ON B.ID_EMPRESA = E.ID_EMPRESA
+                            INNER JOIN USUARIOS U ON SB.ID_USUARIO = U.ID
+                            INNER JOIN AREAS_USUARIOS AU ON U.ID = AU.ID_USUARIOS
+                            INNER JOIN AREAS A ON AU.ID_AREA = A.ID_AREA
+                            WHERE FECHA BETWEEN ? AND ?
+                            GROUP BY ID_BENEFICIARIO, EMPRESA, AREA, SEXO, EDAD
+                          );` ,[desde,hasta],(error,results) =>{
+                            if(error){
+                                console.log(error);
+                            }else{
+                                connection.query(`SELECT
+                                EMPRESA, 
+                                CASE
+                                  WHEN EDAD >= 0 AND EDAD <= 16 THEN '0-16'
+                                  WHEN EDAD >= 17 AND EDAD <= 30 THEN '17-30'
+                                  WHEN EDAD >= 31 AND EDAD <= 47 THEN '31-47'
+                                  WHEN EDAD >= 48 THEN '48+'
+                                END AS RANGO,
+                                COUNT(CASE WHEN SEXO = 'M' THEN 1 END) AS HOMBRES,
+                                COUNT(CASE WHEN SEXO = 'F' THEN 1 END) AS MUJERES
+                              FROM CUALITATIVO 
+                              WHERE SEXO IN ('M', 'F') AND EDAD >= 0 AND EDAD <= 150
+                              GROUP BY EMPRESA, RANGO;`
+                                ,(error,results) =>{
+                                    if(error){
+                                        console.log(error);
+                                    }else{
+                                        res.json(results);
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+        }else{
+            res.json({mensaje:"formato de fecha incorrecto"});
+        }
+    } catch (error) {
+
+    }
+}
+
+
+const reporteInformeServicio = (req,res) =>{
+    const{desde, hasta} = req.body;
+    const formatoFecha = /^\d{4}-\d{2}-\d{2}$/;//regex para validar que la fecha venga año mes dia.
+    try {
+        if(formatoFecha.test(desde) && formatoFecha.test(hasta)){
+            connection.query(`SELECT A.NOMBRE AS AREA, COUNT(DISTINCT ID_BENEFICIARIO) AS BENEFICIARIOS_ATENDIDOS, COUNT(ID_SESION_BENEFICIARIO) AS TERAPIAS_BRINDADAS, MONTHNAME(FECHA) MES FROM SESIONES_BENEFICIARIO SB
+            INNER JOIN USUARIOS U ON SB.ID_USUARIO = U.ID
+            INNER JOIN AREAS_USUARIOS AU ON U.ID = AU.ID_USUARIOS
+            INNER JOIN AREAS A ON AU.ID_AREA = A.ID_AREA
+            WHERE FECHA >= ? AND FECHA <= ?
+            GROUP BY AREA, MES
+            ORDER BY MES DESC;`,[desde,hasta],(error,results) =>{
+                            if(error){
+                                console.log(error);
+                            }else{
+                                res.json(results);
+                            }
+                        }
+                    );
+        }else{
+            res.json({mensaje:"formato de fecha incorrecto"});
+        }
+    } catch (error) {
+
+    }
+}
+
+
+
+
+
 
 module.exports = {
     sesionsForAreas,
     sesionsForBeneficiary,
     reporteCuantitativo,
-    reporteF9
+    reporteF9,
+    reporteEstadistico,
+    reporteCualitativo,
+    reporteInformeServicio
 }
