@@ -183,7 +183,7 @@ const reporteF9 = (req,res) =>{
                     }
                 });
         }else{
-            res.json({mensaje:"formato de fecha incorrecto"});
+            console.log("fecha" + desde,hasta);
         }
     } catch (error) {
 
@@ -297,7 +297,7 @@ const reporteInformeServicio = (req,res) =>{
     const{desde, hasta} = req.body;
     const formatoFecha = /^\d{4}-\d{2}-\d{2}$/;//regex para validar que la fecha venga año mes dia.
     try {
-        if(formatoFecha.test(desde) && formatoFecha.test(hasta)){
+     //   if(formatoFecha.test(desde) && formatoFecha.test(hasta)){
             connection.query(`SELECT A.NOMBRE AS AREA, COUNT(DISTINCT ID_BENEFICIARIO) AS BENEFICIARIOS_ATENDIDOS, COUNT(ID_SESION_BENEFICIARIO) AS TERAPIAS_BRINDADAS, MONTHNAME(FECHA) MES FROM SESIONES_BENEFICIARIO SB
             INNER JOIN USUARIOS U ON SB.ID_USUARIO = U.ID
             INNER JOIN AREAS_USUARIOS AU ON U.ID = AU.ID_USUARIOS
@@ -312,9 +312,9 @@ const reporteInformeServicio = (req,res) =>{
                             }
                         }
                     );
-        }else{
-            res.json({mensaje:"formato de fecha incorrecto"});
-        }
+     //   }else{
+          //  res.json({mensaje:"formato de fecha incorrecto"});
+    //    }
     } catch (error) {
 
     }
