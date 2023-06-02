@@ -61,7 +61,8 @@ const login = async (req, res) => {
                                 }, process.env.SECRET, { expiresIn: 60 * 60 * 24 * 30 }),
                                 nombre: results[0].nombre,
                                 nivel: results[0].NIVEL,
-                                nombre_rol: results[0].nombre_rol
+                                nombre_rol: results[0].nombre_rol,
+                                id: results[0].id,
                         })
                     } else {
                         res.json({
@@ -181,13 +182,13 @@ const mailRecoverPassword = async (req, res) => {
 }
 
 const auth = (req, res, next) => {
-    const { token, nivel } = req.body;
+    const { token, nivel, id} = req.body;
 
     if (token) {
 
         try {
             const decoded = jwt.verify(token, process.env.SECRET);
-            if (decoded.nivel == nivel) {
+            if (decoded.nivel == nivel && decoded.id == id) {
 
             res.json({
                 message: "Token valido",
