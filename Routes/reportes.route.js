@@ -6,9 +6,9 @@ const {sesionsForAreas,sesionsForBeneficiary,reporteCuantitativo,reporteEstadist
 //rutas para traer data de reportes en store procedures de base de datos
 router.get('/sesionesPorArea/:token/:fecha_desde/:fecha_hasta',sesionsForAreas);
 router.get('/sesionesPorBeneficiario/:idBeneficiario/:token/:fecha_desde/:fecha_hasta',sesionsForBeneficiary);
-router.get('/reporteCuantitativo',reporteCuantitativo);
-router.get('/reporteF9',reporteF9);
-router.get('/reporteEstadistico',reporteEstadistico);
-router.get('/reporteCualitativo',reporteCualitativo);
-router.get('/reporteInformeServicio',reporteInformeServicio);
+router.post('/reporteCuantitativo',reporteCuantitativo);
+router.post('/reporteF9',reporteF9);
+router.post('/reporteEstadistico',reporteEstadistico);
+router.post('/reporteCualitativo',reporteCualitativo);
+router.post('/reporteInformeServicio',reporteInformeServicio);
 module.exports = router;
