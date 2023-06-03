@@ -11,6 +11,6 @@ router.post('/create', createUsers);
 router.put('/updateUsers/:id', updateUsers);
 router.put('/updateUsersPassword', updateUsersPassword);
 router.put('/inactivateUsers', inactivateUsers);
-router.get('/getLevels', getLevels);
+router.post('/getLevels', getLevels);
 router.get('/getCompany', getCompany);
 module.exports = router;
