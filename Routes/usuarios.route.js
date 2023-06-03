@@ -6,7 +6,7 @@ const {getUsers,getUser,getUserName, createUsers, updateUsers, updateUsersPasswo
 //rutas de CRUD sobre tabla USUARIOS EN BD EN LA NUBE
 router.get('/all',getUsers);
 router.post('/user',getUser)
-router.post('/userName/',getUserName)
+router.post('/userName',getUserName)
 router.post('/create', createUsers);
 router.put('/updateUsers/:id', updateUsers);
 router.put('/updateUsersPassword', updateUsersPassword);
