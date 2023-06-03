@@ -343,13 +343,24 @@ const inactivateUsers = async (req, res) => {
 };
 
 const getLevels = async (req, res) => {
-  connection.query("SELECT * FROM NIVELES", (error, results) => {
-    if (error) {
-      console.log(error);
-    } else {
-      res.json(results);
-    }
-  });
+  const { nivel } = req.body;
+  if (nivel == 1) {
+    connection.query("SELECT * FROM NIVELES", (error, results) => {
+      if (error) {
+        console.log(error);
+      } else {
+        res.json(results);
+      }
+    });
+  } else if (nivel == 2) {
+    connection.query("SELECT * FROM NIVELES WHERE ID_NIVEL = 2 OR ID_NIVEL = 3", (error, results) => {
+      if (error) {
+        console.log(error);
+      } else {
+        res.json(results);
+      }
+    });
+  }
 };
 
 const getCompany = async (req, res) => {
