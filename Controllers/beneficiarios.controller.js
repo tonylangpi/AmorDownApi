@@ -8,7 +8,16 @@ const createBeneficiarios = async (req, res) => {
 
     const { TOKEN, NOMBRE1, NOMBRE2, NOMBRE3, APELLIDO1, APELLIDO2, ESCOLARIDAD, SEXO, FECHA_NACIMIENTO, DIRECCION, REFERENCIA, NUMERO_HERMANOS, NUMERO_OCUPA } = req.body;
     const decoded = jwt.verify(TOKEN, process.env.SECRET);
-    
+
+    connection.query('Select * from BENEFICIARIO WHERE NOMBRE1 = ? AND NOMBRE2 = ? AND NOMBRE3 = ? AND APELLIDO1 = ? AND APELLIDO2 = ? AND FECHA_NACIMIENTO = ? ', [NOMBRE1, NOMBRE2, NOMBRE3, APELLIDO1, APELLIDO2, FECHA_NACIMIENTO], async (error, results) => {
+        if (error) {
+            res.json(error);
+        } else {
+            if (results.length > 0) {
+                res.json({
+                    message: "El beneficiario ya existe",
+                })
+            } else {
     try {
         await sequelize.query(`INSERT INTO BENEFICIARIO (ID_EMPRESA,NOMBRE1,NOMBRE2,NOMBRE3,APELLIDO1,APELLIDO2,ESCOLARIDAD,SEXO,FECHA_NACIMIENTO,FECHA_INGRESO,DIRECCION,REFERENCIA,ESTADO,NUMERO_HERMANOS,NUMERO_OCUPA,RUTA_ARCH1,RUTA_ARCH2) VALUES (${decoded.id_empresa},'${NOMBRE1}','${NOMBRE2}','${NOMBRE3}','${APELLIDO1}','${APELLIDO2}',
       '${ESCOLARIDAD}','${SEXO}','${FECHA_NACIMIENTO}',CURDATE(),'${DIRECCION}','${REFERENCIA}', 'ACTIVO', ${NUMERO_HERMANOS},${NUMERO_OCUPA},'${req?.files[0]?.filename}','${req?.files[1]?.filename}')`, { type: QueryTypes.INSERT });
@@ -23,6 +32,9 @@ const createBeneficiarios = async (req, res) => {
     } catch (error) {
         res.json(error);
     }
+            }
+        }
+    });
 }
 
 const createPrenatalesBeneficiarios = async (req, res) => {
