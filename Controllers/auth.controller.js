@@ -25,13 +25,15 @@ const login = async (req, res) => {
             token: null
         })
     } else {
-        connection.query(`SELECT U.id, U.nombre, R.id_roles, R.nombre_rol, AU.ID_AREA, A.NOMBRE AS NOMBRE_AREA, U.contraseña, EU.id_empresa, E.direccion, N.NIVEL FROM USUARIOS U
-        inner join ROLES R ON R.id_roles = U.ID_ROL
-        inner join AREAS_USUARIOS AU ON AU.ID_USUARIOS = U.id
-        inner join AREAS A ON A.ID_AREA = AU.ID_AREA
-        inner join EMPRESA_USUARIO EU ON EU.id_usuario = U.id
-        inner join EMPRESA E ON E.id_empresa = EU.id_empresa
-        inner join NIVELES N on N.ID_NIVEL = U.ID_NIVEL
+        connection.query(`SELECT U.id, U.nombre, R.id_roles, R.nombre_rol, AU.ID_AREA, A.NOMBRE AS NOMBRE_AREA, U.contraseña, EU.id_empresa, E.direccion, N.NIVEL, P.CREAR_BENE, P.ACTUALIZA_BENE, P.INHABILITAR_BENE, P.CREAR_AREAS, P.BORRAR_AREAS, P.ACTUALIZAR_AREAS, P.CREAR_USUARIOS, P.INHABILITAR_USUARIOS, P.ACTUALIZAR_USUARIOS, P.CREAR_SESIONES, P.ACTUALIZAR_SESIONES, P.BORRAR_SESIONES , P.VER_REPORTES , P.VER_BENEFICIARIOS , P.VER_USUARIOS, P.VER_SESIONES
+        FROM USUARIOS U
+               inner join ROLES R ON R.id_roles = U.ID_ROL
+               inner join AREAS_USUARIOS AU ON AU.ID_USUARIOS = U.id
+               inner join AREAS A ON A.ID_AREA = AU.ID_AREA
+               inner join EMPRESA_USUARIO EU ON EU.id_usuario = U.id
+               inner join EMPRESA E ON E.id_empresa = EU.id_empresa
+               inner join NIVELES N on N.ID_NIVEL = U.ID_NIVEL
+               inner join PERMISOS P on R.id_roles = P.ID_ROL
          WHERE email =?`, [email], async (error, results) => {
             if (error) {
                 console.log(error);
@@ -57,7 +59,23 @@ const login = async (req, res) => {
                                 nombre_area: results[0].NOMBRE_AREA,
                                 id_empresa: results[0].id_empresa,
                                 direccion: results[0].direccion, 
-                                nivel: results[0].NIVEL
+                                nivel: results[0].NIVEL,
+                                crear_bene: results[0].CREAR_BENE,
+                                actualizar_bene: results[0].ACTUALIZA_BENE,
+                                inhabilitar_bene: results[0].INHABILITAR_BENE,
+                                crear_areas: results[0].CREAR_AREAS,
+                                borrar_areas: results[0].BORRAR_AREAS,
+                                actualizar_areas: results[0].ACTUALIZAR_AREAS,
+                                crear_usuarios: results[0].CREAR_USUARIOS,
+                                inhabilitar_usuarios: results[0].INHABILITAR_USUARIOS,
+                                actualizar_usuarios: results[0].ACTUALIZAR_USUARIOS,
+                                crear_sesiones: results[0].CREAR_SESIONES,
+                                actualizar_sesiones: results[0].ACTUALIZAR_SESIONES,
+                                borrar_sesiones: results[0].BORRAR_SESIONES,
+                                ver_reportes: results[0].VER_REPORTES,
+                                ver_beneficiarios: results[0].VER_BENEFICIARIOS,
+                                ver_usuarios: results[0].VER_USUARIOS,
+                                ver_sesiones: results[0].VER_SESIONES
                                 }, process.env.SECRET, { expiresIn: 60 * 60 * 24 * 30 }),
                                 nombre: results[0].nombre,
                                 nivel: results[0].NIVEL,
