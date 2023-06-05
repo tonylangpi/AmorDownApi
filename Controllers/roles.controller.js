@@ -12,41 +12,65 @@ const getRoles = async (req, res) => {
 }
 
 const createRoles = async (req, res) =>{
-    //ruta = /roles/create?nameRol=Terapeutas
-    const {nameRol} = req.query; 
-    try {
-        await sequelize.query(`INSERT INTO ROLES (nombre_rol) VALUES ('${nameRol}')`,{type: QueryTypes.INSERT});
-       res.json({data: "rol creado satisfactoriamente"});
-    } catch (error) {
-        res.json(error);
-    }
+    const {nombre_rol,cBene,aBene,iBene,cAreas,bAreas,aAreas,cUsuario,iUsuario,aUsuario,cSesiones,aSesiones,bSesiones,vReportes,vBene,vUsuario,vSesiones} = req.body; 
+
+    connection.query(`INSERT INTO ROLES SET ?`, {nombre_rol:nombre_rol}, (error, results) => {
+        if(error){
+            console.log(error);
+        }else{
+            connection.query('SELECT id_roles FROM ROLES ORDER BY id_roles DESC LIMIT 1', (error, results) => {
+                if(error){
+                    console.log(error);
+                }else{
+                    id = results[0].id_roles;
+                    connection.query(`INSERT INTO PERMISOS SET ?`, {ID_ROL:id, CREAR_BENE:cBene, ACTUALIZA_BENE:aBene, INHABILITAR_BENE:iBene, CREAR_AREAS:cAreas, BORRAR_AREAS:bAreas, ACTUALIZAR_AREAS:aAreas, CREAR_USUARIOS:cUsuario, INHABILITAR_USUARIOS:iUsuario, ACTUALIZAR_USUARIOS:aUsuario, CREAR_SESIONES:cSesiones, ACTUALIZAR_SESIONES:aSesiones, BORRAR_SESIONES:bSesiones, VER_REPORTES:vReportes, VER_BENEFICIARIOS:vBene, VER_USUARIOS:vUsuario, VER_SESIONES:vSesiones}, (error, results) => {
+                        if(error){
+                            console.log(error);
+                        }else{
+                            res.json({data: "Rol creado correctamente"});
+                        }
+                    })
+                }
+            })
+        }
+    })
 }
+
 
 const updateRoles = async (req, res) => {
-    const {idRol, nameRolUpdate} = req.body; 
-    try {
-        await sequelize.query(`UPDATE ROLES SET nombre_rol = '${nameRolUpdate}' WHERE id_roles = ${idRol}`, {type:QueryTypes.UPDATE});
-        res.json({data: "Rol Actualizado correctamente"});
-    } catch (error) {
-        res.json(error);
-    }
+    const {idRol, nombre_rol,cBene,aBene,iBene,cAreas,bAreas,aAreas,cUsuario,iUsuario,aUsuario,cSesiones,aSesiones,bSesiones,vReportes,vBene,vUsuario,vSesiones} = req.body;
+    
+    connection.query(`UPDATE ROLES SET nombre_rol = '${nombre_rol}' WHERE id_roles = ${idRol}`, (error, results) => {
+        if(error){
+            console.log(error);
+        }else{
+            connection.query(`UPDATE PERMISOS SET CREAR_BENE = ${cBene}, ACTUALIZA_BENE = ${aBene}, INHABILITAR_BENE = ${iBene}, CREAR_AREAS = ${cAreas}, BORRAR_AREAS = ${bAreas}, ACTUALIZAR_AREAS = ${aAreas}, CREAR_USUARIOS = ${cUsuario}, INHABILITAR_USUARIOS = ${iUsuario}, ACTUALIZAR_USUARIOS = ${aUsuario}, CREAR_SESIONES = ${cSesiones}, ACTUALIZAR_SESIONES = ${aSesiones}, BORRAR_SESIONES = ${bSesiones}, VER_REPORTES = ${vReportes}, VER_BENEFICIARIOS = ${vBene}, VER_USUARIOS = ${vUsuario}, VER_SESIONES = ${vSesiones} WHERE ID_ROL = ${idRol}`, (error, results) => {
+                if(error){
+                    console.log(error);
+                }else{
+                    res.json({data: "Rol actualizado correctamente"});
+                }
+            })
+        }
+    })
 }
 
+
 const DeleteRoles = async (req,res) =>{
-    const {idRol} = req.params; 
-    try {
-        const searchRol = await sequelize.query(`SELECT * FROM ROLES WHERE id_roles =${idRol}`);
-        
-        if(searchRol != null){
-            await sequelize.query(`DELETE FROM ROLES WHERE id_roles = ${idRol}`, {type: QueryTypes.DELETE});
-            res.json({data: "Se ha borrado el rol correctamente"}); 
+    const {idRol} = req.params;
+    connection.query(`DELETE FROM ROLES WHERE id_roles = ${idRol}`, (error, results) => {
+        if(error){
+            console.log(error);
         }else{
-            res.json({data: "No se encontro el rol que se quiere borrar"}); 
+            connection.query(`DELETE FROM PERMISOS WHERE ID_ROL = ${idRol}`, (error, results) => {
+                if(error){
+                    console.log(error);
+                }else{
+                    res.json({data: "Rol eliminado correctamente"});
+                }
+            })
         }
-        
-    } catch (error) {
-        res.json(error);
-    }
+    })
 }
 
 const AddModulesToRoles = async (req, res) =>{
