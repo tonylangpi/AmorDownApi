@@ -200,14 +200,13 @@ const mailRecoverPassword = async (req, res) => {
 }
 
 const auth = (req, res, next) => {
-    const { token, nivel, id} = req.body;
+    const { token} = req.body;
 
     if (token) {
 
         try {
             const decoded = jwt.verify(token, process.env.SECRET);
-            if (decoded.nivel == nivel && decoded.id == id) {
-
+            if (decoded) {
             res.json({
                 message: "Token valido",
                 auth: true,
