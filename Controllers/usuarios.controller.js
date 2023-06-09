@@ -222,7 +222,7 @@ const updateUsers = async (req, res) => {
   } = req.body;
   const emailregex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 
-  if (!email.trim().length || !nombre.trim().length || !estado.trim().length) {
+  if (!email.trim().length || !nombre.trim().length) {
     res.json({
       message: "Faltan datos",
       auth: false,

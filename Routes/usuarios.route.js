@@ -8,7 +8,7 @@ router.get('/all',getUsers);
 router.post('/user',getUser)
 router.post('/userName',getUserName)
 router.post('/create', createUsers);
-router.put('/updateUsers/:id', updateUsers);
+router.post('/updateUsers/:id', updateUsers);
 router.put('/updateUsersPassword', updateUsersPassword);
 router.put('/inactivateUsers', inactivateUsers);
 router.post('/getLevels', getLevels);
