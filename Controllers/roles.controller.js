@@ -11,6 +11,18 @@ const getRoles = async (req, res) => {
     })
 }
 
+const getRolID = async (req,res) => {
+    const { idRol } = req.params; 
+    connection.query(`SELECT R.ID_ROLES, R.NOMBRE_ROL, P.CREAR_BENE, P.ACTUALIZA_BENE, P.INHABILITAR_BENE, P.CREAR_AREAS, P.BORRAR_AREAS, P.ACTUALIZAR_AREAS, P.CREAR_USUARIOS, P.INHABILITAR_USUARIOS, P.ACTUALIZAR_USUARIOS, P.CREAR_SESIONES, P.ACTUALIZAR_SESIONES, P.BORRAR_SESIONES, P.VER_REPORTES, P.VER_BENEFICIARIOS, P.VER_USUARIOS, P.VER_SESIONES FROM ROLES R 
+    INNER JOIN PERMISOS P ON R.ID_ROLES = P.ID_ROL WHERE R.ID_ROLES = ${idRol}`, (error, results) => {
+        if(error){
+            console.log(error);
+        }else{
+            res.json(results);
+        }
+    })
+}
+
 const createRoles = async (req, res) =>{
     const {nombre_rol,cBene,aBene,iBene,cAreas,bAreas,aAreas,cUsuario,iUsuario,aUsuario,cSesiones,aSesiones,bSesiones,vReportes,vBene,vUsuario,vSesiones} = req.body; 
 
@@ -118,6 +130,7 @@ const modulesByRol = async (req,res) => {
 
 module.exports = {
     getRoles,
+    getRolID,
     createRoles,
     DeleteRoles,
     AddModulesToRoles,

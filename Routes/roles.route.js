@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express();
 
-const {getRoles, createRoles, DeleteRoles, AddModulesToRoles, updateModulesToRoles, getAllRolesAndModules, modulesByRol, updateRoles} = require('../Controllers/roles.controller');
+const {getRoles, getRolID, createRoles, DeleteRoles, AddModulesToRoles, updateModulesToRoles, getAllRolesAndModules, modulesByRol, updateRoles} = require('../Controllers/roles.controller');
 
 //rutas de CRUD sobre tabla ROLES EN BD EN LA NUBE
 router.get('/',getRoles);
+router.get('/getRolID/:idRol', getRolID);
 router.post('/create', createRoles);
 router.delete('/deleteRoles/:idRol', DeleteRoles);
 router.put('/updateRoles', updateRoles);
