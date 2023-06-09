@@ -8,7 +8,7 @@ router.get('/',getRoles);
 router.get('/getRolID/:idRol', getRolID);
 router.post('/create', createRoles);
 router.delete('/deleteRoles/:idRol', DeleteRoles);
-router.put('/updateRoles', updateRoles);
+router.post('/updateRoles', updateRoles);
 router.post('/addRolModulo', AddModulesToRoles);
 router.put('/updateRolModulo', updateModulesToRoles);
 router.get('/getRolAndModules', getAllRolesAndModules); 

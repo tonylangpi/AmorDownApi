@@ -50,13 +50,13 @@ const createRoles = async (req, res) =>{
 
 
 const updateRoles = async (req, res) => {
-    const {idRol, nombre_rol,cBene,aBene,iBene,cAreas,bAreas,aAreas,cUsuario,iUsuario,aUsuario,cSesiones,aSesiones,bSesiones,vReportes,vBene,vUsuario,vSesiones} = req.body;
+    const {ID_ROLES, NOMBRE_ROL,CREAR_BENE,ACTUALIZA_BENE,INHABILITAR_BENE,CREAR_AREAS,BORRAR_AREAS,ACTUALIZAR_AREAS,CREAR_USUARIOS,INHABILITAR_USUARIOS,ACTUALIZAR_USUARIOS,CREAR_SESIONES,ACTUALIZAR_SESIONES,BORRAR_SESIONES,VER_REPORTES,VER_BENEFICIARIOS,VER_USUARIOS,VER_SESIONES, VER_AREAS} = req.body;
     
-    connection.query(`UPDATE ROLES SET nombre_rol = '${nombre_rol}' WHERE id_roles = ${idRol}`, (error, results) => {
+    connection.query(`UPDATE ROLES SET nombre_rol = '${NOMBRE_ROL}' WHERE id_roles = ${ID_ROLES}`, (error, results) => {
         if(error){
             console.log(error);
         }else{
-            connection.query(`UPDATE PERMISOS SET CREAR_BENE = ${cBene}, ACTUALIZA_BENE = ${aBene}, INHABILITAR_BENE = ${iBene}, CREAR_AREAS = ${cAreas}, BORRAR_AREAS = ${bAreas}, ACTUALIZAR_AREAS = ${aAreas}, CREAR_USUARIOS = ${cUsuario}, INHABILITAR_USUARIOS = ${iUsuario}, ACTUALIZAR_USUARIOS = ${aUsuario}, CREAR_SESIONES = ${cSesiones}, ACTUALIZAR_SESIONES = ${aSesiones}, BORRAR_SESIONES = ${bSesiones}, VER_REPORTES = ${vReportes}, VER_BENEFICIARIOS = ${vBene}, VER_USUARIOS = ${vUsuario}, VER_SESIONES = ${vSesiones} WHERE ID_ROL = ${idRol}`, (error, results) => {
+            connection.query(`UPDATE PERMISOS SET CREAR_BENE = ${CREAR_BENE}, ACTUALIZA_BENE = ${ACTUALIZA_BENE}, INHABILITAR_BENE = ${INHABILITAR_BENE}, CREAR_AREAS = ${CREAR_AREAS}, BORRAR_AREAS = ${BORRAR_AREAS}, ACTUALIZAR_AREAS = ${ACTUALIZAR_AREAS}, CREAR_USUARIOS = ${CREAR_USUARIOS}, INHABILITAR_USUARIOS = ${INHABILITAR_USUARIOS}, ACTUALIZAR_USUARIOS = ${ACTUALIZAR_USUARIOS}, CREAR_SESIONES = ${CREAR_SESIONES}, ACTUALIZAR_SESIONES = ${ACTUALIZAR_SESIONES}, BORRAR_SESIONES = ${BORRAR_SESIONES}, VER_REPORTES = ${VER_REPORTES}, VER_BENEFICIARIOS = ${VER_BENEFICIARIOS}, VER_USUARIOS = ${VER_USUARIOS}, VER_SESIONES = ${VER_SESIONES}, VER_AREAS = ${VER_AREAS} WHERE ID_ROL = ${ID_ROLES}`, (error, results) => {
                 if(error){
                     console.log(error);
                 }else{
