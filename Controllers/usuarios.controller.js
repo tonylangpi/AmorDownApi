@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken");
 
 const getUsers = (req, res) => {
   connection.query(
-    "Select US.id AS ID_USUARIO, US.email AS EMAIL_USUARIO, US.nombre AS NOMBRE_USUARIO, US.estado AS ESTADO_USUARIO, RO.nombre_rol AS ROL_USUARIO, A.NOMBRE AS NOMBRE_AREA, E.nombre AS NOMBRE_EMPRESA , E.direccion AS DIRECCION_EMPRESA from USUARIOS US inner join ROLES RO on US.id_roles = RO.id_roles inner join AREAS_USUARIOS AU ON AU.ID_USUARIOS = US.id INNER JOIN AREAS A ON AU.ID_AREA = A.ID_AREA INNER JOIN EMPRESA_USUARIO EU ON EU.id_usuario = US.id INNER JOIN EMPRESA E ON E.id_empresa = EU.id_empresa ORDER BY US.id ASC",
+    "Select US.id AS ID_USUARIO, US.email AS EMAIL_USUARIO, US.nombre AS NOMBRE_USUARIO, US.estado AS ESTADO_USUARIO, RO.nombre_rol AS ROL_USUARIO, A.NOMBRE AS NOMBRE_AREA, E.nombre AS NOMBRE_EMPRESA , E.direccion AS DIRECCION_EMPRESA from USUARIOS US inner join ROLES RO on US.ID_ROL = RO.id_roles inner join AREAS_USUARIOS AU ON AU.ID_USUARIOS = US.id INNER JOIN AREAS A ON AU.ID_AREA = A.ID_AREA INNER JOIN EMPRESA_USUARIO EU ON EU.id_usuario = US.id INNER JOIN EMPRESA E ON E.id_empresa = EU.id_empresa ORDER BY US.id ASC",
     (error, results) => {
       if (error) {
         console.log(error);
