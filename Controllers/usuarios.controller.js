@@ -367,6 +367,7 @@ const getCompany = async (req, res) => {
   });
 };
 
+
 module.exports = {
   getUsers,
   getUser,

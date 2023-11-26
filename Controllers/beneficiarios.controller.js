@@ -1,7 +1,6 @@
 const { sequelize, connection } = require("../Database/bd");
 const { QueryTypes } = require('sequelize');
 const jwt = require('jsonwebtoken');
-//const subirArchivos = require('../Middleware/multer'); 
 
 
 const createBeneficiarios = async (req, res) => {
@@ -397,20 +396,29 @@ const activarBeneficiario = (req, res) => {
 
 const Asistencia = async (req, res) => {
     const {Beneficiario} = req.body 
-    connection.query('INSERT INTO ASISTENCIA (ID_BENEFICIARIO, FECHA) VALUES (?, CURDATE())', [Beneficiario], (err, result) =>{
+    connection.query('SELECT * FROM ASISTENCIA WHERE ID_BENEFICIARIO = ? AND FECHA = CURDATE()', [Beneficiario], (err, result) => {
         if(err) {
             console.log(err)
-        } else {
-            res.json(result)
+        } else if(result.length >= 1){
+            res.send('Este Beneficiario ya tiene asistencia')
+        } else { 
+            connection.query('INSERT INTO ASISTENCIA (ID_BENEFICIARIO, FECHA) VALUES (?, CURDATE())', [Beneficiario], (err, result) =>{
+                if(err) {
+                    console.log(err)
+                } else {
+                    res.json(result)
+                }
+            })
         }
     })
+    
        
 }
 
 const AsistenciaFecha = async (req, res) => {
     const {Fecha} = req.body 
 
-    connection.query("SELECT E.NOMBRE AS SUCURSAL, B.ID_BENEFICIARIO, CONCAT(B.NOMBRE1, ' ', B.NOMBRE2, ' ', B.NOMBRE3) AS NOMBRES, CONCAT(B.APELLIDO1, ' ', B.APELLIDO2) AS APELLIDOS  FROM ASISTENCIA A INNER JOIN BENEFICIARIO B ON A.ID_BENEFICIARIO = B.ID_BENEFICIARIO INNER JOIN EMPRESA E ON B.ID_EMPRESA = E.ID_EMPRESA WHERE A.FECHA = ? AND B.ESTADO = 'ACTIVO'", [Fecha], (err, result) => {
+    connection.query("SELECT E.NOMBRE AS SUCURSAL, B.ID_BENEFICIARIO, CONCAT(B.NOMBRE1, ' ', B.NOMBRE2, ' ', B.NOMBRE3) AS NOMBRES, CONCAT(B.APELLIDO1, ' ', B.APELLIDO2) AS APELLIDOS, A.FECHA FROM ASISTENCIA A INNER JOIN BENEFICIARIO B ON A.ID_BENEFICIARIO = B.ID_BENEFICIARIO INNER JOIN EMPRESA E ON B.ID_EMPRESA = E.ID_EMPRESA WHERE A.FECHA = ? AND B.ESTADO = 'ACTIVO'", [Fecha], (err, result) => {
         if(err){
             console.log(err)
         } else {
