@@ -118,12 +118,6 @@ const createUsers = async (req, res) => {
               auth: false,
               token: null,
             });
-          } else if (!passregex.test(password)) {
-            res.json({
-              message: "La contraseña no es valida",
-              auth: false,
-              token: null,
-            });
           } else {
             connection.query(
               "INSERT INTO USUARIOS SET ?",
