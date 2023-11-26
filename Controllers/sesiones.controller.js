@@ -72,7 +72,7 @@ const deleteSesiones = async (req, res) => {
 const SesionesDisponibles = async (req, res) => {
     const {Beneficiario, Fecha} = req.body
     const Fechaa = Fecha || '2000-01-01'
-    connection.query('SELECT S.ID_SESION, S.NUMERO_SESION FROM SESIONES S WHERE NOT EXISTS ( SELECT 1 FROM SESIONES_BENEFICIARIO SB WHERE SB.ID_SESION = S.ID_SESION AND SB.ID_BENEFICIARIO = ? AND SB.FECHA = ? )', [Beneficiario, Fechaa], (error, results) => {
+    connection.query('SELECT S.ID_SESION, S.NUMERO_SESION, HORA_INGRESO, HORA_EGRESO FROM SESIONES S WHERE NOT EXISTS ( SELECT 1 FROM SESIONES_BENEFICIARIO SB WHERE SB.ID_SESION = S.ID_SESION AND SB.ID_BENEFICIARIO = ? AND SB.FECHA = ? )', [Beneficiario, Fechaa], (error, results) => {
         if(error){
             console.log(error);
             

@@ -8,7 +8,7 @@ router.get('/AreaSesiones/:token',allSesiones);
 router.post('/createSesion',sesionesUpload.single('evaluaciones'),createSesiones)
 router.put('/updateSesion', updateSesiones);
 router.delete('/deleteSesion', deleteSesiones);
-router.post('/SesionesDisponiles', SesionesDisponibles)
+router.post('/SesionesDisponibles', SesionesDisponibles)
 
 
 module.exports = router;
