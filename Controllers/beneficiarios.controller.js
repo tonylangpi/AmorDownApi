@@ -7,7 +7,7 @@ const createBeneficiarios = async (req, res) => {
 
     const { TOKEN, NOMBRE1, NOMBRE2, NOMBRE3, APELLIDO1, APELLIDO2, ESCOLARIDAD, SEXO, FECHA_NACIMIENTO, DIRECCION, REFERENCIA, NUMERO_HERMANOS, NUMERO_OCUPA } = req.body;
     const decoded = jwt.verify(TOKEN, process.env.SECRET);
-
+    console.log("Hola")
     connection.query('Select * from BENEFICIARIO WHERE NOMBRE1 = ? AND NOMBRE2 = ? AND NOMBRE3 = ? AND APELLIDO1 = ? AND APELLIDO2 = ? AND FECHA_NACIMIENTO = ? ', [NOMBRE1, NOMBRE2, NOMBRE3, APELLIDO1, APELLIDO2, FECHA_NACIMIENTO], async (error, results) => {
         if (error) {
             res.json(error);
@@ -18,6 +18,7 @@ const createBeneficiarios = async (req, res) => {
                 })
             } else {
     try {
+        
         await sequelize.query(`INSERT INTO BENEFICIARIO (ID_EMPRESA,NOMBRE1,NOMBRE2,NOMBRE3,APELLIDO1,APELLIDO2,ESCOLARIDAD,SEXO,FECHA_NACIMIENTO,FECHA_INGRESO,DIRECCION,REFERENCIA,ESTADO,NUMERO_HERMANOS,NUMERO_OCUPA,RUTA_ARCH1,RUTA_ARCH2) VALUES (${decoded.id_empresa},'${NOMBRE1}','${NOMBRE2}','${NOMBRE3}','${APELLIDO1}','${APELLIDO2}',
       '${ESCOLARIDAD}','${SEXO}','${FECHA_NACIMIENTO}',CURDATE(),'${DIRECCION}','${REFERENCIA}', 'ACTIVO', ${NUMERO_HERMANOS},${NUMERO_OCUPA},'${req?.files[0]?.filename}','${req?.files[1]?.filename}')`, { type: QueryTypes.INSERT });
 
@@ -28,7 +29,10 @@ const createBeneficiarios = async (req, res) => {
             message: 'Beneficiario creado satisfactoriamente',
             idBeneficiario: id
         });
+        console.log("Hola x2")
     } catch (error) {
+        console.log("Hola x3"),
+        console.log(error)
         res.json(error);
     }
             }
@@ -400,25 +404,24 @@ const Asistencia = async (req, res) => {
         if(err) {
             console.log(err)
         } else if(result.length >= 1){
-            res.send('Este Beneficiario ya tiene asistencia')
+            res.send({message: 'Este Beneficiario ya tiene asistencia'})
         } else { 
             connection.query('INSERT INTO ASISTENCIA (ID_BENEFICIARIO, FECHA) VALUES (?, CURDATE())', [Beneficiario], (err, result) =>{
                 if(err) {
                     console.log(err)
                 } else {
-                    res.json(result)
+                    res.json({message:"Asistencia Agregada"})
                 }
             })
         }
-    })
-    
+    })   
        
 }
 
 const AsistenciaFecha = async (req, res) => {
     const {Fecha} = req.body 
 
-    connection.query("SELECT E.NOMBRE AS SUCURSAL, B.ID_BENEFICIARIO, CONCAT(B.NOMBRE1, ' ', B.NOMBRE2, ' ', B.NOMBRE3) AS NOMBRES, CONCAT(B.APELLIDO1, ' ', B.APELLIDO2) AS APELLIDOS, A.FECHA FROM ASISTENCIA A INNER JOIN BENEFICIARIO B ON A.ID_BENEFICIARIO = B.ID_BENEFICIARIO INNER JOIN EMPRESA E ON B.ID_EMPRESA = E.ID_EMPRESA WHERE A.FECHA = ? AND B.ESTADO = 'ACTIVO'", [Fecha], (err, result) => {
+    connection.query("SELECT E.NOMBRE AS SUCURSAL, B.ID_BENEFICIARIO, CONCAT(B.NOMBRE1, ' ', B.NOMBRE2, ' ', B.NOMBRE3) AS NOMBRES, CONCAT(B.APELLIDO1, ' ', B.APELLIDO2) AS APELLIDOS, DATE(A.FECHA) AS FECHA FROM ASISTENCIA A INNER JOIN BENEFICIARIO B ON A.ID_BENEFICIARIO = B.ID_BENEFICIARIO INNER JOIN EMPRESA E ON B.ID_EMPRESA = E.ID_EMPRESA WHERE A.FECHA = ? AND B.ESTADO = 'ACTIVO'", [Fecha], (err, result) => {
         if(err){
             console.log(err)
         } else {

@@ -14,6 +14,17 @@ const getServicios =  (req, res) => {
     })
 }
 
+const getServicioss =  (req, res) => {
+    const {NOMBRE} = req.body;
+     connection.query(`SELECT * FROM AREAS WHERE ESTADO = 1`,(error, results) => {
+        if(error){
+            console.log(error);
+        }else{
+            res.json(results);
+        }
+    })
+}
+
 const createServicios =  (req, res) => {
     const {NOMBRE} = req.body;
     connection.query('INSERT INTO AREAS SET ?',{NOMBRE},(error, results) => {
@@ -41,14 +52,26 @@ const updateServicios = async(req,res)=>{
 }
 
 const deleteServicios = (req, res) =>{
-    const{ID_AREA} = req.params;
-    connection.query('DELETE FROM AREAS WHERE ID_AREA = ?', [ID_AREA],async (error, results) => {
-        if(error){
-            console.log(error);
-        }else{
-            res.json(results);
-        }
-    })
+    const{Area, Estado} = req.body;
+    console.log(Area, Estado)
+    if(Estado === 1){
+        connection.query('UPDATE AREAS SET ESTADO = 0 WHERE ID_AREA = ?', [Area],async (error, results) => {
+            if(error){
+                console.log(error);
+            }else{
+                res.json(results);
+            }
+        })
+    } else if(Estado===0){
+        connection.query('UPDATE AREAS SET ESTADO = 1 WHERE ID_AREA = ?', [Area],async (error, results) => {
+            if(error){
+                console.log(error);
+            }else{
+                res.json(results);
+            }
+        })
+    }
+    
 }
 
 const areaBeneficiarios = (req,res) => {
@@ -69,4 +92,5 @@ module.exports = {
     updateServicios,
     deleteServicios,
     areaBeneficiarios,
+    getServicioss
 }
