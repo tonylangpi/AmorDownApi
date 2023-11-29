@@ -7,7 +7,7 @@ const createBeneficiarios = async (req, res) => {
 
     const { TOKEN, NOMBRE1, NOMBRE2, NOMBRE3, APELLIDO1, APELLIDO2, ESCOLARIDAD, SEXO, FECHA_NACIMIENTO, DIRECCION, REFERENCIA, NUMERO_HERMANOS, NUMERO_OCUPA } = req.body;
     const decoded = jwt.verify(TOKEN, process.env.SECRET);
-    console.log("Hola")
+
     connection.query('Select * from BENEFICIARIO WHERE NOMBRE1 = ? AND NOMBRE2 = ? AND NOMBRE3 = ? AND APELLIDO1 = ? AND APELLIDO2 = ? AND FECHA_NACIMIENTO = ? ', [NOMBRE1, NOMBRE2, NOMBRE3, APELLIDO1, APELLIDO2, FECHA_NACIMIENTO], async (error, results) => {
         if (error) {
             res.json(error);
@@ -29,9 +29,8 @@ const createBeneficiarios = async (req, res) => {
             message: 'Beneficiario creado satisfactoriamente',
             idBeneficiario: id
         });
-        console.log("Hola x2")
+
     } catch (error) {
-        console.log("Hola x3"),
         console.log(error)
         res.json(error);
     }
