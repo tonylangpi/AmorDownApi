@@ -26,7 +26,8 @@ const getServicioss =  (req, res) => {
 
 const createServicios =  (req, res) => {
     const {NOMBRE} = req.body;
-    connection.query('INSERT INTO AREAS SET ?',{NOMBRE},(error, results) => {
+    ESTADO = 1;
+    connection.query('INSERT INTO AREAS SET ?',{NOMBRE,ESTADO},(error, results) => {
         if(error){
             console.log(error);
         }else{

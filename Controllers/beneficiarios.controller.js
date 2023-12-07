@@ -74,7 +74,6 @@ const createPeriNatales = async (req, res) => {
 
 const createPostNatales = async (req, res) => {
     const { TRATAMIENTO, INFECCIONES, FIEBRE, CONVULCIONES, LENGUAJE, CAMINA, OBSERVACIONES } = req.body;
-    console.log("hola")
     const { idbene } = req.params;
     try {
         await sequelize.query(`INSERT INTO POST_NATALES(ID_BENEFICIARIO,TRATAMIENTO,INFECCIONES,FIEBRE,CONVULCIONES,LENGUAJE,CAMINA,OBSERVACIONES) VALUES(${idbene},'${TRATAMIENTO}','${INFECCIONES}','${FIEBRE}','${CONVULCIONES}','${LENGUAJE}','${CAMINA}','${OBSERVACIONES}')`, { type: QueryTypes.INSERT });

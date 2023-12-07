@@ -25,7 +25,7 @@ const login = async (req, res) => {
             token: null
         })
     } else {
-        connection.query(`SELECT U.id, U.nombre, R.id_roles, R.nombre_rol, AU.ID_AREA, A.NOMBRE AS NOMBRE_AREA, U.contraseña, EU.id_empresa, E.direccion, N.NIVEL, P.CREAR_BENE, P.ACTUALIZA_BENE, P.INHABILITAR_BENE, P.CREAR_AREAS, P.BORRAR_AREAS, P.ACTUALIZAR_AREAS, P.CREAR_USUARIOS, P.INHABILITAR_USUARIOS, P.ACTUALIZAR_USUARIOS, P.CREAR_SESIONES, P.ACTUALIZAR_SESIONES, P.BORRAR_SESIONES , P.VER_REPORTES , P.VER_BENEFICIARIOS , P.VER_USUARIOS, P.VER_SESIONES
+        connection.query(`SELECT U.id, U.nombre, R.id_roles, R.nombre_rol, AU.ID_AREA, A.NOMBRE AS NOMBRE_AREA, U.telefono, U.contraseña, EU.id_empresa, E.direccion, N.NIVEL, P.CREAR_BENE, P.ACTUALIZA_BENE, P.INHABILITAR_BENE, P.CREAR_AREAS, P.BORRAR_AREAS, P.ACTUALIZAR_AREAS, P.CREAR_USUARIOS, P.INHABILITAR_USUARIOS, P.ACTUALIZAR_USUARIOS, P.CREAR_SESIONES, P.ACTUALIZAR_SESIONES, P.BORRAR_SESIONES , P.VER_REPORTES , P.VER_BENEFICIARIOS , P.VER_USUARIOS, P.VER_SESIONES
         FROM USUARIOS U
                inner join ROLES R ON R.id_roles = U.ID_ROL
                inner join AREAS_USUARIOS AU ON AU.ID_USUARIOS = U.id
@@ -57,6 +57,7 @@ const login = async (req, res) => {
                                 nombre_rol: results[0].nombre_rol,
                                 id_area: results[0].ID_AREA,
                                 nombre_area: results[0].NOMBRE_AREA,
+                                telefono: results[0].telefono,
                                 id_empresa: results[0].id_empresa,
                                 direccion: results[0].direccion, 
                                 nivel: results[0].NIVEL,
