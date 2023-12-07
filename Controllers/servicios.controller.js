@@ -4,8 +4,7 @@ const { QueryTypes } = require('sequelize');
 
 
 const getServicios =  (req, res) => {
-    const {NOMBRE} = req.body;
-     connection.query(`SELECT * FROM AREAS WHERE NOMBRE LIKE '%${NOMBRE}%'`,(error, results) => {
+     connection.query(`SELECT * FROM AREAS`,(error, results) => {
         if(error){
             console.log(error);
         }else{
@@ -51,7 +50,7 @@ const updateServicios = async(req,res)=>{
 
 }
 
-const deleteServicios = (req, res) =>{
+const deleteServicios = (req, res) =>{ 
     const{Area, Estado} = req.body;
     console.log(Area, Estado)
     if(Estado === 1){

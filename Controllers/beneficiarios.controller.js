@@ -74,6 +74,7 @@ const createPeriNatales = async (req, res) => {
 
 const createPostNatales = async (req, res) => {
     const { TRATAMIENTO, INFECCIONES, FIEBRE, CONVULCIONES, LENGUAJE, CAMINA, OBSERVACIONES } = req.body;
+    console.log("hola")
     const { idbene } = req.params;
     try {
         await sequelize.query(`INSERT INTO POST_NATALES(ID_BENEFICIARIO,TRATAMIENTO,INFECCIONES,FIEBRE,CONVULCIONES,LENGUAJE,CAMINA,OBSERVACIONES) VALUES(${idbene},'${TRATAMIENTO}','${INFECCIONES}','${FIEBRE}','${CONVULCIONES}','${LENGUAJE}','${CAMINA}','${OBSERVACIONES}')`, { type: QueryTypes.INSERT });
@@ -82,6 +83,7 @@ const createPostNatales = async (req, res) => {
         res.json(error);
     }
 }
+
 const createEncargados = async (req, res) => {
     const { NOMBRE1, NOMBRE2, NOMBRE3, APELLIDO1, APELLIDO2, TELEFONO, TIPO, ESCOLARIDAD, OCUPACION, FECHA_NACIMIENTO } = req.body;
     try {
@@ -113,31 +115,33 @@ const allBeneficiarios = async (req, res) => {
     try {
         const beneficiarios = await sequelize.query(`
         SELECT 
-        ID_BENEFICIARIO, 
-        ID_EMPRESA, 
-        NOMBRE1, 
-        NOMBRE2, 
-        NOMBRE3, 
-        APELLIDO1,
-        APELLIDO2,
-        ESCOLARIDAD,
-        SEXO,
-        FECHA_NACIMIENTO,
+        B.ID_BENEFICIARIO, 
+        B.ID_EMPRESA, 
+        CONCAT(E.CODIGO, '00', B.ID_BENEFICIARIO) AS CARNET,
+        B.NOMBRE1, 
+        B.NOMBRE2, 
+        B.NOMBRE3, 
+        B.APELLIDO1,
+        B.APELLIDO2,
+        B.ESCOLARIDAD,
+        B.SEXO,
+        B.FECHA_NACIMIENTO,
         FECHA_INGRESO,
-        DIRECCION,
-        REFERENCIA,
-        ESTADO,
-        NUMERO_HERMANOS,
-        NUMERO_OCUPA,
-        RUTA_ARCH1,
-        RUTA_ARCH2,
-        ROUND(DATEDIFF(CURDATE(),FECHA_NACIMIENTO)/365) AS EDAD,
+        B.DIRECCION,
+        B.REFERENCIA,
+        B.ESTADO,
+        B.NUMERO_HERMANOS,
+        B.NUMERO_OCUPA,
+        B.RUTA_ARCH1,
+        B.RUTA_ARCH2,
+        ROUND(DATEDIFF(CURDATE(),B.FECHA_NACIMIENTO)/365) AS EDAD,
           CASE
-                WHEN DATEDIFF(CURDATE(), fecha_nacimiento) / 365 < 18 THEN 'Joven'
-                WHEN DATEDIFF(CURDATE(), fecha_nacimiento) / 365 < 65 THEN 'Adulto'
+                WHEN DATEDIFF(CURDATE(), B.fecha_nacimiento) / 365 < 18 THEN 'Joven'
+                WHEN DATEDIFF(CURDATE(), B.fecha_nacimiento) / 365 < 65 THEN 'Adulto'
                 ELSE 'Mayor'
             END AS grupo_edad
-         FROM BENEFICIARIO; `, { type: QueryTypes.SELECT });
+         FROM BENEFICIARIO B
+         INNER JOIN EMPRESA E ON B.ID_EMPRESA = E.ID_EMPRESA; `, { type: QueryTypes.SELECT });
         res.json(beneficiarios);
     } catch (error) {
         res.json(error)
