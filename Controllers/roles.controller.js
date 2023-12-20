@@ -24,9 +24,9 @@ const getRolID = async (req,res) => {
 }
 
 const createRoles = async (req, res) =>{
-    const {nombre_rol,cBene,aBene,iBene,cAreas,bAreas,aAreas,cUsuario,iUsuario,aUsuario,cSesiones,aSesiones,bSesiones,vReportes,vBene,vUsuario,vSesiones} = req.body; 
+    const {NOMBRE_ROL,cBene,aBene,iBene,cAreas,bAreas,aAreas,cUsuario,iUsuario,aUsuario,cSesiones,aSesiones,bSesiones,vReportes,vBene,vUsuario,vSesiones} = req.body; 
 
-    connection.query(`INSERT INTO ROLES SET ?`, {nombre_rol:nombre_rol}, (error, results) => {
+    connection.query(`INSERT INTO ROLES SET ?`, {nombre_rol:NOMBRE_ROL}, (error, results) => {
         if(error){
             console.log(error);
         }else{

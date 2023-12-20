@@ -36,6 +36,18 @@ const createServicios =  (req, res) => {
     })
 }
 
+const CreateEmpresa = (req, res) => {
+    const {Nombre, Direccion, Telefono, Codigo} = req.body
+    connection.query("INSERT INTO EMPRESA (NOMBRE, DIRECCION, TELEFONO, CODIGO) VALUES (?, ?, ?, ?)", [Nombre, Direccion, Telefono, Codigo], (error, result) => {
+        if(error){
+            console.log(error)
+        } else {
+            res.json({message:"Creada Correctamente"})
+        }
+    })
+    
+}
+
 const updateServicios = async(req,res)=>{
     const{ID_AREA} = req.params;
     const {NOMBRE} = req.body;
@@ -92,5 +104,6 @@ module.exports = {
     updateServicios,
     deleteServicios,
     areaBeneficiarios,
-    getServicioss
+    getServicioss, 
+    CreateEmpresa
 }
