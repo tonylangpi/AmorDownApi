@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken");
 
 const getUsers = (req, res) => {
   connection.query(
-    "Select US.id AS ID_USUARIO, US.email AS EMAIL_USUARIO,US.ID_NIVEL, US.nombre AS NOMBRE_USUARIO, US.estado AS ESTADO_USUARIO, RO.nombre_rol AS ROL_USUARIO, A.NOMBRE AS NOMBRE_AREA, E.nombre AS NOMBRE_EMPRESA , E.direccion AS DIRECCION_EMPRESA, US.TELEFONO from USUARIOS US inner join ROLES RO on US.ID_ROL = RO.id_roles inner join AREAS_USUARIOS AU ON AU.ID_USUARIOS = US.id INNER JOIN AREAS A ON AU.ID_AREA = A.ID_AREA INNER JOIN EMPRESA_USUARIO EU ON EU.id_usuario = US.id INNER JOIN EMPRESA E ON E.id_empresa = EU.id_empresa ORDER BY US.id ASC",
+    "Select US.id AS ID_USUARIO, US.email AS EMAIL_USUARIO,US.ID_NIVEL, US.nombre AS NOMBRE_USUARIO, US.estado AS ESTADO_USUARIO, RO.nombre_rol AS ROL_USUARIO, GROUP_CONCAT(distinct A.NOMBRE SEPARATOR ', ') AS NOMBRE_AREA, GROUP_CONCAT(distinct E.nombre SEPARATOR ', ') AS NOMBRE_EMPRESA , US.TELEFONO from USUARIOS US inner join ROLES RO on US.ID_ROL = RO.id_roles inner join AREAS_USUARIOS AU ON AU.ID_USUARIOS = US.id INNER JOIN AREAS A ON AU.ID_AREA = A.ID_AREA INNER JOIN EMPRESA_USUARIO EU ON EU.id_usuario = US.id INNER JOIN EMPRESA E ON E.id_empresa = EU.id_empresa GROUP BY US.ID, US.EMAIL, US.ID_NIVEL, US.NOMBRE, RO.NOMBRE_ROL, US.TELEFONO",
     (error, results) => {
       if (error) {
         console.log(error);
@@ -367,6 +367,45 @@ const getCompany = async (req, res) => {
   });
 };
 
+const SedeUsuario = async (req, res) => {
+  const {Usuario, Sede} = req.body
+
+  connection.query("SELECT * FROM EMPRESA_USUARIO WHERE ID_EMPRESA = ?  AND ID_USUARIO = ?", [Sede, Usuario], (err, result) => {
+    if(err){
+      console.log(err)
+    } else if (result.length >= 1){
+      res.json({message:"Este usuario ya pertenese a esta sede"})
+    } else {
+      connection.query("INSERT INTO EMPRESA_USUARIO VALUES (?, ?)", [Sede, Usuario], (err, result) => {
+        if(err){
+          console.log(err)
+        } else {
+          res.json({message: "Se agrego correctamente"})
+        }
+      })
+    }
+  })
+}
+
+const AreaUsuario = async (req, res) => {
+  const {Usuario, Area} = req.body
+
+  connection.query("SELECT * FROM AREAS_USUARIOS WHERE ID_AREA = ?  AND ID_USUARIOS = ?", [Area, Usuario], (err, result) => {
+    if(err){
+      console.log(err)
+    } else if (result.length >= 1){
+      res.json({message:"Este usuario ya pertenese a esta area"})
+    } else {
+      connection.query("INSERT INTO AREAS_USUARIOS VALUES (?, ?)", [Area, Usuario], (err, result) => {
+        if(err){
+          console.log(err)
+        } else {
+          res.json({message: "Se agrego correctamente"})
+        }
+      })
+    }
+  })
+}
 
 module.exports = {
   getUsers,
@@ -377,5 +416,7 @@ module.exports = {
   updateUsersPassword,
   inactivateUsers,
   getLevels,
-  getCompany,
+  getCompany, 
+  SedeUsuario, 
+  AreaUsuario
 };

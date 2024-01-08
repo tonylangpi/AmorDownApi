@@ -19,18 +19,19 @@ const allSesiones = async (req, res) => {
 }
 
 const createSesiones = async (req, res) => {
-    const {id_beneficiario, id_sesion, tipo_sesion,observacion, fecha, token} = req.body;
+    const {id_beneficiario, id_sesion, tipo_sesion, actividad, evolucion, area, acompanamiento, fecha, token} = req.body;
     const decoded = jwt.verify(token, process.env.SECRET);
     
 
-    connection.query(`SELECT * FROM SESIONES_BENEFICIARIO WHERE ID_BENEFICIARIO = '${id_beneficiario}' AND FECHA = '${fecha}' AND ID_SESION = '${id_sesion}'`, (error, results) => {
+    connection.query(`SELECT * FROM SESIONES_BENEFICIARIO SB INNER JOIN AREAS A ON SB.ID_AREA = A.ID_AREA WHERE SB.ID_BENEFICIARIO = '${id_beneficiario}' AND SB.FECHA = '${fecha}' AND SB.ID_SESION = '${id_sesion}' AND A.NOMBRE != 'Psicologia'`, (error, results) => {
         if(error){
             console.log(error);
         }else{
             if(results.length > 0){
                 res.json({message: "Ya existe una cita para este beneficiario en esta fecha y hora"});
             }else{
-    connection.query('INSERT INTO SESIONES_BENEFICIARIO SET ?', {ID_USUARIO:decoded.id,ID_SESION:id_sesion,ID_BENEFICIARIO:id_beneficiario, TIPO_SESION:tipo_sesion,DIRE_ARCHIVO:req?.file?.filename, OBSERVACION:observacion, FECHA:fecha},async (error, results) => {
+                console.log(acompanamiento)
+    connection.query('INSERT INTO SESIONES_BENEFICIARIO SET ?', {ID_USUARIO:decoded.id, ID_SESION:id_sesion, ID_BENEFICIARIO:id_beneficiario, TIPO_SESION:tipo_sesion, ACTIVIDAD:actividad, EVOLUCION:evolucion, DIRE_ARCHIVO:req?.file?.filename, ID_AREA:area, ACOMPAÑAMIENTO:acompanamiento, FECHA:fecha},async (error, results) => {
         if(error){
             console.log(error);
         }else{
@@ -70,9 +71,20 @@ const deleteSesiones = async (req, res) => {
 
 
 const SesionesDisponibles = async (req, res) => {
-    const {Beneficiario, Fecha} = req.body
+    const {Beneficiario, Fecha, token, Area} = req.body
+    const decoded = jwt.verify(token, process.env.SECRET);
     const Fechaa = Fecha || '2000-01-01'
-    connection.query('SELECT S.ID_SESION, S.NUMERO_SESION, HORA_INGRESO, HORA_EGRESO FROM SESIONES S WHERE NOT EXISTS ( SELECT 1 FROM SESIONES_BENEFICIARIO SB WHERE SB.ID_SESION = S.ID_SESION AND SB.ID_BENEFICIARIO = ? AND SB.FECHA = ? )', [Beneficiario, Fechaa], (error, results) => {
+    if(Area ==="Psicologia") {
+        connection.query('SELECT ID_SESION, NUMERO_SESION, HORA_INGRESO, HORA_EGRESO FROM SESIONES ', (error, results) => {
+            if(error){
+                console.log(error);
+                
+            }else{
+                res.json(results);
+            }
+        })
+    } else {
+         connection.query('SELECT S.ID_SESION, S.NUMERO_SESION, HORA_INGRESO, HORA_EGRESO FROM SESIONES S WHERE NOT EXISTS ( SELECT 1 FROM SESIONES_BENEFICIARIO SB INNER JOIN AREAS A ON SB.ID_AREA = A.ID_AREA WHERE SB.ID_SESION = S.ID_SESION AND SB.ID_BENEFICIARIO = ? AND SB.FECHA = ? AND A.NOMBRE != "Psicologia")', [Beneficiario, Fechaa], (error, results) => {
         if(error){
             console.log(error);
             
@@ -80,14 +92,43 @@ const SesionesDisponibles = async (req, res) => {
             res.json(results);
         }
     })
+    }
+    
 }
 
+const TusAreas = async (req, res) => {
+    const {token} = req.body
+    const decoded = jwt.verify(token, process.env.SECRET);
+        connection.query('SELECT A.ID_AREA, A.NOMBRE AS AREA FROM AREAS_USUARIOS AU INNER JOIN AREAS A ON AU.ID_AREA = A.ID_AREA WHERE AU.ID_USUARIOS = ? ',[decoded.id], (error, results) => {
+            if(error){
+                console.log(error);
+                
+            }else{
+                res.json(results);
+            }
+        })
+    
+}
 
+const TusSedes= async (req, res) => {
+    const {Usuario} = req.body
+        connection.query('SELECT EU.ID_EMPRESA, E.NOMBRE  FROM EMPRESA_USUARIO EU INNER JOIN EMPRESA E ON EU.ID_EMPRESA = E.ID_EMPRESA WHERE EU.ID_USUARIO = ? ',[Usuario], (error, results) => {
+            if(error){
+                console.log(error);
+                
+            }else{
+                res.json(results);
+            }
+        })
+    
+}
 
 module.exports = {
     allSesiones,
     createSesiones,
     updateSesiones,
     deleteSesiones,
-    SesionesDisponibles
+    SesionesDisponibles,
+    TusAreas, 
+    TusSedes
 }

@@ -24,7 +24,7 @@ const getRolID = async (req,res) => {
 }
 
 const createRoles = async (req, res) =>{
-    const {NOMBRE_ROL,cBene,aBene,iBene,cAreas,bAreas,aAreas,cUsuario,iUsuario,aUsuario,cSesiones,aSesiones,bSesiones,vReportes,vBene,vUsuario,vSesiones} = req.body; 
+    const {NOMBRE_ROL,CREAR_BENE,ACTUALIZA_BENE,INHABILITAR_BENE,CREAR_AREAS,BORRAR_AREAS,ACTUALIZAR_AREAS,CREAR_USUARIOS,INHABILITAR_USUARIOS,ACTUALIZAR_USUARIOS,CREAR_SESIONES,ACTUALIZAR_SESIONES,BORRAR_SESIONES,VER_REPORTES,VER_BENEFICIARIOS,VER_USUARIOS,VER_SESIONES, VER_AREAS} = req.body; 
 
     connection.query(`INSERT INTO ROLES SET ?`, {nombre_rol:NOMBRE_ROL}, (error, results) => {
         if(error){
@@ -35,7 +35,7 @@ const createRoles = async (req, res) =>{
                     console.log(error);
                 }else{
                     id = results[0].id_roles;
-                    connection.query(`INSERT INTO PERMISOS SET ?`, {ID_ROL:id, CREAR_BENE:cBene, ACTUALIZA_BENE:aBene, INHABILITAR_BENE:iBene, CREAR_AREAS:cAreas, BORRAR_AREAS:bAreas, ACTUALIZAR_AREAS:aAreas, CREAR_USUARIOS:cUsuario, INHABILITAR_USUARIOS:iUsuario, ACTUALIZAR_USUARIOS:aUsuario, CREAR_SESIONES:cSesiones, ACTUALIZAR_SESIONES:aSesiones, BORRAR_SESIONES:bSesiones, VER_REPORTES:vReportes, VER_BENEFICIARIOS:vBene, VER_USUARIOS:vUsuario, VER_SESIONES:vSesiones}, (error, results) => {
+                    connection.query(`INSERT INTO PERMISOS SET ?`, {ID_ROL:id, CREAR_BENE, ACTUALIZA_BENE, INHABILITAR_BENE, CREAR_AREAS, BORRAR_AREAS, ACTUALIZAR_AREAS, CREAR_USUARIOS, INHABILITAR_USUARIOS, ACTUALIZAR_USUARIOS, CREAR_SESIONES, ACTUALIZAR_SESIONES, BORRAR_SESIONES, VER_REPORTES, VER_BENEFICIARIOS, VER_USUARIOS, VER_SESIONES}, (error, results) => {
                         if(error){
                             console.log(error);
                         }else{

@@ -5,10 +5,10 @@ const jwt = require('jsonwebtoken');
 
 const createBeneficiarios = async (req, res) => {
 
-    const { TOKEN, NOMBRE1, NOMBRE2, NOMBRE3, APELLIDO1, APELLIDO2, ESCOLARIDAD, SEXO, FECHA_NACIMIENTO, DIRECCION, REFERENCIA, NUMERO_HERMANOS, NUMERO_OCUPA } = req.body;
+    const { TOKEN, NOMBRES, APELLIDOS, ESCOLARIDAD, SEXO, FECHA_NACIMIENTO, DIRECCION, REFERENCIA, NUMERO_HERMANOS, NUMERO_OCUPA, CUI, PUEBLO, DEPARTAMENTO, MUNICIPIO } = req.body;
     const decoded = jwt.verify(TOKEN, process.env.SECRET);
 
-    connection.query('Select * from BENEFICIARIO WHERE NOMBRE1 = ? AND NOMBRE2 = ? AND NOMBRE3 = ? AND APELLIDO1 = ? AND APELLIDO2 = ? AND FECHA_NACIMIENTO = ? ', [NOMBRE1, NOMBRE2, NOMBRE3, APELLIDO1, APELLIDO2, FECHA_NACIMIENTO], async (error, results) => {
+    connection.query('Select * from BENEFICIARIO WHERE NOMBRES = ? AND APELLIDOS = ? AND FECHA_NACIMIENTO = ? AND CUI = ?', [NOMBRES, APELLIDOS, FECHA_NACIMIENTO, CUI], async (error, results) => {
         if (error) {
             res.json(error);
         } else {
@@ -18,9 +18,10 @@ const createBeneficiarios = async (req, res) => {
                 })
             } else {
     try {
-        
-        await sequelize.query(`INSERT INTO BENEFICIARIO (ID_EMPRESA,NOMBRE1,NOMBRE2,NOMBRE3,APELLIDO1,APELLIDO2,ESCOLARIDAD,SEXO,FECHA_NACIMIENTO,FECHA_INGRESO,DIRECCION,REFERENCIA,ESTADO,NUMERO_HERMANOS,NUMERO_OCUPA,RUTA_ARCH1,RUTA_ARCH2) VALUES (${decoded.id_empresa},'${NOMBRE1}','${NOMBRE2}','${NOMBRE3}','${APELLIDO1}','${APELLIDO2}',
-      '${ESCOLARIDAD}','${SEXO}','${FECHA_NACIMIENTO}',CURDATE(),'${DIRECCION}','${REFERENCIA}', 'ACTIVO', ${NUMERO_HERMANOS},${NUMERO_OCUPA},'${req?.files[0]?.filename}','${req?.files[1]?.filename}')`, { type: QueryTypes.INSERT });
+        const [Correlativo] = await sequelize.query(`SELECT MAX(CORRELATIVO) AS CORRELATIVO FROM BENEFICIARIO WHERE ID_EMPRESA = '${decoded.id_empresa}' ORDER BY CORRELATIVO DESC LIMIT 1`, { type: QueryTypes.SELECT });
+        const Corre = Correlativo.CORRELATIVO || 0
+        const NuevoCorrelaitvo = parseInt(Corre) + 1 
+        await sequelize.query(`INSERT INTO BENEFICIARIO (ID_EMPRESA,CUI,NOMBRES,APELLIDOS,ESCOLARIDAD,SEXO, PUEBLO,FECHA_NACIMIENTO,FECHA_INGRESO,DEPARTAMENTO,MUNICIPIO,DIRECCION,REFERENCIA,ESTADO,NUMERO_HERMANOS,NUMERO_OCUPA,RUTA_ARCH1,RUTA_ARCH2, CORRELATIVO) VALUES (${decoded.id_empresa},'${CUI}','${NOMBRES}','${APELLIDOS}', '${ESCOLARIDAD}','${SEXO}','${PUEBLO}','${FECHA_NACIMIENTO}',CURDATE(),'${DEPARTAMENTO}','${MUNICIPIO}','${DIRECCION}','${REFERENCIA}', 1, ${NUMERO_HERMANOS},${NUMERO_OCUPA},'${req?.files[0]?.filename}','${req?.files[1]?.filename}','${NuevoCorrelaitvo}')`, { type: QueryTypes.INSERT });
 
         const id = await sequelize.query(`SELECT LAST_INSERT_ID() AS ID_BENE_INGRESADO`,
             { type: QueryTypes.SELECT });
@@ -84,9 +85,9 @@ const createPostNatales = async (req, res) => {
 }
 
 const createEncargados = async (req, res) => {
-    const { NOMBRE1, NOMBRE2, NOMBRE3, APELLIDO1, APELLIDO2, TELEFONO, TIPO, ESCOLARIDAD, OCUPACION, FECHA_NACIMIENTO } = req.body;
+    const { NOMBRE1, NOMBRE2, NOMBRE3, APELLIDO1, APELLIDO2, TELEFONO, TIPO, ESCOLARIDAD, OCUPACION, FECHA_NACIMIENTO, CUI, ECIVIL } = req.body;
     try {
-        await sequelize.query(`INSERT INTO ENCARGADO (NOMBRE1, NOMBRE2, NOMBRE3, APELLIDO1, APELLIDO2, TELEFONO, TIPO,ESCOLARIDAD, OCUPACION,FECHA_NACIMIENTO) VALUES ('${NOMBRE1}','${NOMBRE2}','${NOMBRE3}','${APELLIDO1}','${APELLIDO2}','${TELEFONO}','${TIPO}','${ESCOLARIDAD}','${OCUPACION}','${FECHA_NACIMIENTO}')`, { type: QueryTypes.INSERT });
+        await sequelize.query(`INSERT INTO ENCARGADO (CUI, NOMBRE1, NOMBRE2, NOMBRE3, APELLIDO1, APELLIDO2, TELEFONO, TIPO,ESCOLARIDAD, OCUPACION, ECIVIL, FECHA_NACIMIENTO) VALUES ('${CUI}','${NOMBRE1}','${NOMBRE2}','${NOMBRE3}','${APELLIDO1}','${APELLIDO2}','${TELEFONO}','${TIPO}','${ESCOLARIDAD}','${OCUPACION}','${ECIVIL}','${FECHA_NACIMIENTO}')`, { type: QueryTypes.INSERT });
         const { idbene } = req.params;
         const idEncargado = await sequelize.query(`SELECT LAST_INSERT_ID() AS ID_ENCARGADO_INGRESADO`,
             { type: QueryTypes.SELECT });
@@ -111,21 +112,24 @@ const unionBeneficiarioEncargado = async (req, res) => {
 }
 
 const allBeneficiarios = async (req, res) => {
+    const {sede} = req.body
     try {
         const beneficiarios = await sequelize.query(`
         SELECT 
         B.ID_BENEFICIARIO, 
         B.ID_EMPRESA, 
-        CONCAT(E.CODIGO, '00', B.ID_BENEFICIARIO) AS CARNET,
-        B.NOMBRE1, 
-        B.NOMBRE2, 
-        B.NOMBRE3, 
-        B.APELLIDO1,
-        B.APELLIDO2,
+        E.CODIGO,
+        B.CORRELATIVO,
+        B.CUI,
+        B.NOMBRES, 
+        B.APELLIDOS,
         B.ESCOLARIDAD,
         B.SEXO,
+        B.PUEBLO,
         B.FECHA_NACIMIENTO,
         FECHA_INGRESO,
+        B.DEPARTAMENTO,
+        B.MUNICIPIO,
         B.DIRECCION,
         B.REFERENCIA,
         B.ESTADO,
@@ -140,7 +144,7 @@ const allBeneficiarios = async (req, res) => {
                 ELSE 'Mayor'
             END AS grupo_edad
          FROM BENEFICIARIO B
-         INNER JOIN EMPRESA E ON B.ID_EMPRESA = E.ID_EMPRESA; `, { type: QueryTypes.SELECT });
+         INNER JOIN EMPRESA E ON B.ID_EMPRESA = E.ID_EMPRESA WHERE B.ID_EMPRESA = ${sede} `, { type: QueryTypes.SELECT });
         res.json(beneficiarios);
     } catch (error) {
         res.json(error)
@@ -152,15 +156,16 @@ const allByName = (req, res) => {
     connection.query(`SELECT 
     ID_BENEFICIARIO, 
     ID_EMPRESA, 
-    NOMBRE1, 
-    NOMBRE2, 
-    NOMBRE3, 
-    APELLIDO1,
-    APELLIDO2,
+    CUI,
+    NOMBRES, 
+    APELLIDOS,
     ESCOLARIDAD,
     SEXO,
+    PUEBLO,
     FECHA_NACIMIENTO,
     FECHA_INGRESO,
+    DEPARTAMENTO, 
+    MUNICIPIO,
     DIRECCION,
     REFERENCIA,
     ESTADO,
@@ -196,10 +201,10 @@ const beneficiarioArea = (req, res) => {
 
 }
 const updateInfoBene = (req, res) => {
-    const { NOMBRE1, NOMBRE2, NOMBRE3, APELLIDO1, APELLIDO2, ESCOLARIDAD, SEXO, FECHA_NACIMIENTO, DIRECCION, REFERENCIA, NUMERO_HERMANOS, NUMERO_OCUPA } = req.body;
+    const { NOMBRES, APELLIDOS, ESCOLARIDAD, SEXO, FECHA_NACIMIENTO, DIRECCION, REFERENCIA, NUMERO_HERMANOS, NUMERO_OCUPA, CUI} = req.body;
     const { idBene } = req.params;
 
-    connection.query('UPDATE BENEFICIARIO SET NOMBRE1 = ?, NOMBRE2 = ?, NOMBRE3= ?, APELLIDO1 = ?, APELLIDO2 = ?, ESCOLARIDAD = ?, SEXO = ?,FECHA_NACIMIENTO = ?, DIRECCION = ?, REFERENCIA = ?, NUMERO_HERMANOS =  ?, NUMERO_OCUPA = ? WHERE ID_BENEFICIARIO = ?', [NOMBRE1, NOMBRE2, NOMBRE3, APELLIDO1, APELLIDO2, ESCOLARIDAD, SEXO, FECHA_NACIMIENTO, DIRECCION, REFERENCIA, NUMERO_HERMANOS, NUMERO_OCUPA, idBene], (error, results) => {
+    connection.query('UPDATE BENEFICIARIO SET CUI = ?, NOMBRES= ?, APELLIDOS = ?, ESCOLARIDAD = ?, SEXO = ?, PUEBLO = ?, FECHA_NACIMIENTO = ?, DEPARTAMENTO = ?, MUNICIPIO = ?, DIRECCION = ?, REFERENCIA = ?, NUMERO_HERMANOS =  ?, NUMERO_OCUPA = ? WHERE ID_BENEFICIARIO = ?', [CUI, NOMBRES, APELLIDOS, ESCOLARIDAD, SEXO, PUEBLO, FECHA_NACIMIENTO, DEPARTAMENTO, MUNICIPIO, DIRECCION, REFERENCIA, NUMERO_HERMANOS, NUMERO_OCUPA, idBene], (error, results) => {
         if (error) {
             console.log(error);
         } else {
@@ -378,28 +383,6 @@ const buscarPostNatalesBene = (req, res) => {
     });
 }
 
-const inactivarBeneficiario = (req, res) => {
-    const { idBene } = req.params;
-    connection.query(`UPDATE BENEFICIARIO SET ESTADO = 'INACTIVO' WHERE ID_BENEFICIARIO = ?`, [idBene], (error, results) => {
-        if (error) {
-            console.log(error);
-        } else {
-            res.json(results);
-        }
-    });
-}
-
-const activarBeneficiario = (req, res) => {
-    const { idBene } = req.params;
-    connection.query(`UPDATE BENEFICIARIO SET ESTADO = 'ACTIVO' WHERE ID_BENEFICIARIO = ?`, [idBene], (error, results) => {
-        if (error) {
-            console.log(error);
-        } else {
-            res.json(results);
-        }
-    });
-}
-
 const Asistencia = async (req, res) => {
     const {Beneficiario} = req.body 
     connection.query('SELECT * FROM ASISTENCIA WHERE ID_BENEFICIARIO = ? AND FECHA = CURDATE()', [Beneficiario], (err, result) => {
@@ -421,15 +404,51 @@ const Asistencia = async (req, res) => {
 }
 
 const AsistenciaFecha = async (req, res) => {
-    const {Fecha} = req.body 
+    const {Fecha, Sede} = req.body 
 
-    connection.query("SELECT E.NOMBRE AS SUCURSAL, B.ID_BENEFICIARIO, CONCAT(B.NOMBRE1, ' ', B.NOMBRE2, ' ', B.NOMBRE3) AS NOMBRES, CONCAT(B.APELLIDO1, ' ', B.APELLIDO2) AS APELLIDOS, DATE(A.FECHA) AS FECHA FROM ASISTENCIA A INNER JOIN BENEFICIARIO B ON A.ID_BENEFICIARIO = B.ID_BENEFICIARIO INNER JOIN EMPRESA E ON B.ID_EMPRESA = E.ID_EMPRESA WHERE A.FECHA = ? AND B.ESTADO = 'ACTIVO'", [Fecha], (err, result) => {
+    connection.query("SELECT E.NOMBRE AS SUCURSAL, B.ID_BENEFICIARIO, B.NOMBRES, B.APELLIDOS, DATE(A.FECHA) AS FECHA FROM ASISTENCIA A INNER JOIN BENEFICIARIO B ON A.ID_BENEFICIARIO = B.ID_BENEFICIARIO INNER JOIN EMPRESA E ON B.ID_EMPRESA = E.ID_EMPRESA WHERE A.FECHA = ? AND B.ID_EMPRESA = ?", [Fecha, Sede], (err, result) => {
         if(err){
             console.log(err)
         } else {
             res.json(result)
         }
     })
+}
+
+const bitacoraBene = async (req, res) => {
+    const {Estado, Beneficiario, Motivo, Usuario} = req.body
+    
+    if(Estado === 1) {
+        connection.query("INSERT INTO BITACORA_BENE VALUES(?, ?, ?, ?)", [Beneficiario, 'Inactivando', Usuario, Motivo], (err, result) => {
+            if(err){
+                console.log(err)
+            } else {
+                connection.query("UPDATE BENEFICIARIO SET ESTADO = 2 WHERE ID_BENEFICIARIO = ?", [Beneficiario], (error, response) => {
+                    if(error){
+                        console.log(error)
+                    } else {
+                        res.json({message:"Se inactivo correctamente"})
+                    }
+                })
+                
+            }
+        })
+    } else if(Estado === 2){
+        connection.query("INSERT INTO BITACORA_BENE VALUES(?, ?, ?, ?)", [Beneficiario, 'Activando', Usuario, Motivo], (err, result) => {
+            if(err){
+                console.log(err)
+            } else {
+                connection.query("UPDATE BENEFICIARIO SET ESTADO = 1 WHERE ID_BENEFICIARIO = ?", [Beneficiario], (error, response) => {
+                    if(error){
+                        console.log(error)
+                    } else {
+                        res.json({message:"Se activo correctamente"})
+                    }
+                })
+                
+            }
+        })
+    }
 }
 
 module.exports = {
@@ -454,8 +473,7 @@ module.exports = {
     buscarPrenatalesBene,
     buscarPerinatalesBene,
     buscarPostNatalesBene,
-    inactivarBeneficiario,
-    activarBeneficiario,
     Asistencia, 
-    AsistenciaFecha
+    AsistenciaFecha, 
+    bitacoraBene, 
 }
