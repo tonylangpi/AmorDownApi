@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express();
 const {upload} = require('../services/multer.services');
-const {createBeneficiarios,Asistencia, AsistenciaFecha, createPrenatalesBeneficiarios,createHistorialClinico,createPeriNatales,createPostNatales,createEncargados,unionBeneficiarioEncargado, allBeneficiarios, beneficiarioArea,allByName,updateInfoBene,updateInfoBeneHistorialClinico,updateInfoBenePrenatales,updateInfoBenePeriNatales,updateInfoBenePostNatal,updateInfoBeneEncargado, buscarEncargadoBene,buscarHistorialClinicoBene,buscarPrenatalesBene,buscarPerinatalesBene,buscarPostNatalesBene, bitacoraBene} = require('../Controllers/beneficiarios.controller');
+const {createBeneficiarios,Asistencia, AsistenciaFecha, createPrenatalesBeneficiarios,createHistorialClinico,createPeriNatales,createPostNatales,createEncargados,unionBeneficiarioEncargado, allBeneficiarios, updateInfoBene,updateInfoBeneHistorialClinico,updateInfoBenePrenatales,updateInfoBenePeriNatales,updateInfoBenePostNatal,updateInfoBeneEncargado, buscarEncargadoBene,buscarHistorialClinicoBene,buscarPrenatalesBene,buscarPerinatalesBene,buscarPostNatalesBene, bitacoraBene} = require('../Controllers/beneficiarios.controller');
 
 router.post('/all', allBeneficiarios);
 router.post('/allByName', allByName);

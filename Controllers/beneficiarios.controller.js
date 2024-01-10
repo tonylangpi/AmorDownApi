@@ -151,60 +151,12 @@ const allBeneficiarios = async (req, res) => {
     }
 
 }
-const allByName = (req, res) => {
-    const { nombre } = req.body;
-    connection.query(`SELECT 
-    ID_BENEFICIARIO, 
-    ID_EMPRESA, 
-    CUI,
-    NOMBRES, 
-    APELLIDOS,
-    ESCOLARIDAD,
-    SEXO,
-    PUEBLO,
-    FECHA_NACIMIENTO,
-    FECHA_INGRESO,
-    DEPARTAMENTO, 
-    MUNICIPIO,
-    DIRECCION,
-    REFERENCIA,
-    ESTADO,
-    NUMERO_HERMANOS,
-    NUMERO_OCUPA,
-    RUTA_ARCH1,
-    RUTA_ARCH2,
-    ROUND(DATEDIFF(CURDATE(),FECHA_NACIMIENTO)/365) AS EDAD,
-      CASE
-            WHEN DATEDIFF(CURDATE(), fecha_nacimiento) / 365 < 18 THEN 'Joven'
-            WHEN DATEDIFF(CURDATE(), fecha_nacimiento) / 365 < 65 THEN 'Adulto'
-            ELSE 'Mayor'
-        END AS grupo_edad
-     FROM BENEFICIARIO
-      WHERE CONCAT(NOMBRE1, ' ' ,NOMBRE2, ' ' ,APELLIDO1, ' ' ,APELLIDO2) LIKE '%${nombre}%'`, (error, results) => {
-        if (error) {
-            console.log(error);
-        } else {
-            res.json(results);
-        }
-    })
-}
-const beneficiarioArea = (req, res) => {
-    const token = req.params.token;
-    const decoded = jwt.verify(token, process.env.SECRET);
-    connection.query('SELECT B.ID_BENEFICIARIO, B.NOMBRE1 AS NOMBRE, B.APELLIDO1 AS APELLIDO, A.NOMBRE AS AREA FROM BENEFICIARIO B INNER JOIN BENEFICIARIO_AREAS BA ON BA.ID_BENEFICIARIO = B.ID_BENEFICIARIO INNER JOIN AREAS A ON A.ID_AREA = BA.ID_AREA WHERE A.NOMBRE = ? ', [decoded.nombre_area], (error, results) => {
-        if (error) {
-            console.log(error);
-        } else {
-            res.json(results);
-        }
-    })
 
-}
 const updateInfoBene = (req, res) => {
     const { NOMBRES, APELLIDOS, ESCOLARIDAD, SEXO, FECHA_NACIMIENTO, DIRECCION, REFERENCIA, NUMERO_HERMANOS, NUMERO_OCUPA, CUI} = req.body;
     const { idBene } = req.params;
 
-    connection.query('UPDATE BENEFICIARIO SET CUI = ?, NOMBRES= ?, APELLIDOS = ?, ESCOLARIDAD = ?, SEXO = ?, PUEBLO = ?, FECHA_NACIMIENTO = ?, DEPARTAMENTO = ?, MUNICIPIO = ?, DIRECCION = ?, REFERENCIA = ?, NUMERO_HERMANOS =  ?, NUMERO_OCUPA = ? WHERE ID_BENEFICIARIO = ?', [CUI, NOMBRES, APELLIDOS, ESCOLARIDAD, SEXO, PUEBLO, FECHA_NACIMIENTO, DEPARTAMENTO, MUNICIPIO, DIRECCION, REFERENCIA, NUMERO_HERMANOS, NUMERO_OCUPA, idBene], (error, results) => {
+    connection.query('UPDATE BENEFICIARIO SET CUI = ?, NOMBRES= ?, APELLIDOS = ?, ESCOLARIDAD = ?, SEXO = ?, FECHA_NACIMIENTO = ?, DEPARTAMENTO = ?, MUNICIPIO = ?, DIRECCION = ?, REFERENCIA = ?, NUMERO_HERMANOS =  ?, NUMERO_OCUPA = ? WHERE ID_BENEFICIARIO = ?', [CUI, NOMBRES, APELLIDOS, ESCOLARIDAD, SEXO, PUEBLO, FECHA_NACIMIENTO, DEPARTAMENTO, MUNICIPIO, DIRECCION, REFERENCIA, NUMERO_HERMANOS, NUMERO_OCUPA, idBene], (error, results) => {
         if (error) {
             console.log(error);
         } else {
@@ -460,8 +412,6 @@ module.exports = {
     createEncargados,
     unionBeneficiarioEncargado,
     allBeneficiarios,
-    beneficiarioArea,
-    allByName,
     updateInfoBene,
     updateInfoBeneHistorialClinico,
     updateInfoBenePrenatales,
