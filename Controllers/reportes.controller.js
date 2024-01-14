@@ -118,7 +118,7 @@ try{
           } else {
             if (Cuatrimestre === '1') {
               connection.query(
-                "SELECT COUNT( XD.ID_AREA) AS TOTAL_AREAS, COUNT(distinct XD.ID_BENEFICIARIO) AS TOTAL_BENES, A.NOMBRE AS AREA, MONTH(XD.FECHA) AS MES FROM REPORTEF8 XD INNER JOIN AREAS A ON XD.ID_AREA = A.ID_AREA WHERE MONTH(FECHA) BETWEEN 1 AND 4 AND YEAR(FECHA) = ? group by AREA, MES",
+                "SELECT SUM( XD.TOTAL) AS TOTAL_AREAS, COUNT(distinct XD.ID_BENEFICIARIO) AS TOTAL_BENES, A.NOMBRE AS AREA, MONTH(XD.FECHA) AS MES FROM REPORTEF8 XD INNER JOIN AREAS A ON XD.ID_AREA = A.ID_AREA WHERE MONTH(FECHA) BETWEEN 1 AND 4 AND YEAR(FECHA) = ? group by AREA, MES",
                 [Anio],
                 (errSelect, resultSelect) => {
                   if (errSelect) {
@@ -127,7 +127,7 @@ try{
                     res.json(resultSelect);
                   }
                 })} else if(Cuatrimestre === '2'){
-            connection.query("SELECT COUNT( XD.ID_AREA) AS TOTAL_AREAS, COUNT(distinct XD.ID_BENEFICIARIO) AS TOTAL_BENES, A.NOMBRE AS AREA, MONTH(XD.FECHA) AS MES FROM REPORTEF8 XD INNER JOIN AREAS A ON XD.ID_AREA = A.ID_AREA WHERE MONTH(FECHA) BETWEEN 5 AND 8 AND YEAR(FECHA) = ? group by AREA, MES", [Anio], (erro, result)=>{
+            connection.query("SELECT SUM( XD.TOTAL)AS TOTAL_AREAS, COUNT(distinct XD.ID_BENEFICIARIO) AS TOTAL_BENES, A.NOMBRE AS AREA, MONTH(XD.FECHA) AS MES FROM REPORTEF8 XD INNER JOIN AREAS A ON XD.ID_AREA = A.ID_AREA WHERE MONTH(FECHA) BETWEEN 5 AND 8 AND YEAR(FECHA) = ? group by AREA, MES", [Anio], (erro, result)=>{
               if(erro){
                 console.log(erro)
               } else {
@@ -135,7 +135,7 @@ try{
               }
             })
           } else if(Cuatrimestre === '3'){
-            connection.query("SELECT COUNT( XD.ID_AREA) AS TOTAL_AREAS, COUNT(distinct XD.ID_BENEFICIARIO) AS TOTAL_BENES, A.NOMBRE AS AREA, MONTH(XD.FECHA) AS MES FROM REPORTEF8 XD INNER JOIN AREAS A ON XD.ID_AREA = A.ID_AREA WHERE MONTH(FECHA) BETWEEN 9 AND 12 AND YEAR(FECHA) = ? group by AREA, MES", [Anio], (erro, result)=>{
+            connection.query("SELECT SUM( XD.TOTAL) AS TOTAL_AREAS, COUNT(distinct XD.ID_BENEFICIARIO) AS TOTAL_BENES, A.NOMBRE AS AREA, MONTH(XD.FECHA) AS MES FROM REPORTEF8 XD INNER JOIN AREAS A ON XD.ID_AREA = A.ID_AREA WHERE MONTH(FECHA) BETWEEN 9 AND 12 AND YEAR(FECHA) = ? group by AREA, MES", [Anio], (erro, result)=>{
               if(erro){
                 console.log(erro)
               } else {
@@ -186,7 +186,7 @@ const reporteMiEstadistica = (req, res) => {
             console.log(error);
           } else {
             connection.query(
-              "CREATE TEMPORARY TABLE MYESTADISTICA AS( SELECT B.ID_BENEFICIARIO, COUNT(distinct SB.FECHA) AS ASISTENCIAS, E.NOMBRE AS EMPRESA, B.SEXO, TIMESTAMPDIFF(YEAR, B.FECHA_NACIMIENTO, CURDATE()) AS EDAD, SB.ID_AREA FROM SESIONES_BENEFICIARIO SB INNER JOIN BENEFICIARIO B ON SB.ID_BENEFICIARIO = B.ID_BENEFICIARIO INNER JOIN EMPRESA E ON B.ID_EMPRESA = E.ID_EMPRESA WHERE MONTH(FECHA) = ? AND SB.ID_USUARIO = ? AND YEAR(FECHA) = ? GROUP BY ID_BENEFICIARIO, EMPRESA, SEXO, EDAD, ID_AREA);",
+              "CREATE TEMPORARY TABLE MYESTADISTICA AS( SELECT B.ID_BENEFICIARIO, COUNT(SB.FECHA) AS ASISTENCIAS, E.NOMBRE AS EMPRESA, B.SEXO, TIMESTAMPDIFF(YEAR, B.FECHA_NACIMIENTO, CURDATE()) AS EDAD, SB.ID_AREA FROM SESIONES_BENEFICIARIO SB INNER JOIN BENEFICIARIO B ON SB.ID_BENEFICIARIO = B.ID_BENEFICIARIO INNER JOIN EMPRESA E ON B.ID_EMPRESA = E.ID_EMPRESA WHERE MONTH(FECHA) = ? AND SB.ID_USUARIO = ? AND YEAR(FECHA) = ? GROUP BY ID_BENEFICIARIO, EMPRESA, SEXO, EDAD, ID_AREA);",
               [Mes, Usuario, Anio],
               (error, results) => {
                 if (error) {
@@ -277,7 +277,7 @@ const sesionsForAreas = (req, res) => {
             if(error) {
               console.log(error)
             } else {
-              connection.query("SELECT COUNT( XD.ID_AREA) AS TOTAL_AREAS, COUNT(distinct XD.ID_BENEFICIARIO) AS TOTAL_BENES, A.NOMBRE AS AREA, MONTH(XD.FECHA) AS MES FROM SERVICIOS XD INNER JOIN AREAS A ON XD.ID_AREA = A.ID_AREA group by AREA, MES", (err, response) => {
+              connection.query("SELECT SUM( XD.TOTAL) AS TOTAL_AREAS, COUNT(distinct XD.ID_BENEFICIARIO) AS TOTAL_BENES, A.NOMBRE AS AREA, MONTH(XD.FECHA) AS MES FROM SERVICIOS XD INNER JOIN AREAS A ON XD.ID_AREA = A.ID_AREA group by AREA, MES", (err, response) => {
                 if(err) {
                   console.log(err)
                 } else {
