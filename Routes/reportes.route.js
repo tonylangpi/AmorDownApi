@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express();
 
-const {sesionsForAreas,sesionsForBeneficiary,reporteCuantitativo,reporteMiEstadistica, reporteF9, reporteF8, reporteCualitativo, reporteInformeServicio, Estadistica} = require('../Controllers/reportes.controller');
+const {sesionsForAreas,sesionsForBeneficiary,reporteCuantitativo,reporteMiEstadistica, reporteF9, reporteF8, reporteCualitativo, reporteInformeServicio, Estadistica, Filtros} = require('../Controllers/reportes.controller');
 
 //rutas para traer data de reportes en store procedures de base de datos
 router.post('/sesionesPorArea',sesionsForAreas);
@@ -13,4 +13,5 @@ router.post('/reporteCualitativo',reporteCualitativo);
 router.post('/reporteInformeServicio',reporteInformeServicio);
 router.post('/reporteF8', reporteF8);
 router.post('/reporteEstadisticoGeneral', Estadistica)
+router.post('/filtros', Filtros)
 module.exports = router;

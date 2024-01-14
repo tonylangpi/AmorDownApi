@@ -330,6 +330,36 @@ const Estadistica = (req, res) => {
 
 }
 
+const Filtros = (req, res) => {
+  const {Filtro, Tipo} = req.body 
+  if(Tipo === 1) {
+    connection.query("SELECT CONCAT(B.NOMBRES, ' ', B.APELLIDOS) AS NOMBRE_COMPLETO, B.SEXO, TIMESTAMPDIFF(YEAR, B.FECHA_NACIMIENTO, CURDATE()) AS EDAD, B.CORRELATIVO, E.CODIGO, B.DEPARTAMENTO, B.MUNICIPIO, B.DIRECCION FROM HISTORIAL_CLINICO HC INNER JOIN BENEFICIARIO B ON HC.ID_BENEFICIARIO = B.ID_BENEFICIARIO INNER JOIN EMPRESA E ON B.ID_EMPRESA = E.ID_EMPRESA WHERE HC.DISCAPACIDAD = ? ORDER BY EDAD", [Filtro], (err, result) =>{
+      if(err){
+        console.log(err)
+      } else {
+        res.json(result)
+      }
+  })
+  } else if (Tipo===2){
+    connection.query("SELECT CONCAT(B.NOMBRES, ' ', B.APELLIDOS) AS NOMBRE_COMPLETO, B.SEXO, TIMESTAMPDIFF(YEAR, B.FECHA_NACIMIENTO, CURDATE()) AS EDAD, B.CORRELATIVO, E.CODIGO, B.DEPARTAMENTO, B.MUNICIPIO, B.DIRECCION FROM HISTORIAL_CLINICO HC INNER JOIN BENEFICIARIO B ON HC.ID_BENEFICIARIO = B.ID_BENEFICIARIO INNER JOIN EMPRESA E ON B.ID_EMPRESA = E.ID_EMPRESA WHERE HC.LENTES = ? ORDER BY EDAD", [Filtro], (err, result) =>{
+      if(err){
+        console.log(err)
+      } else {
+        res.json(result)
+      }
+  })
+  } else if (Tipo === 3){
+    connection.query("SELECT CONCAT(B.NOMBRES, ' ', B.APELLIDOS) AS NOMBRE_COMPLETO, B.SEXO, TIMESTAMPDIFF(YEAR, B.FECHA_NACIMIENTO, CURDATE()) AS EDAD, B.CORRELATIVO, E.CODIGO, B.DEPARTAMENTO, B.MUNICIPIO, B.DIRECCION FROM HISTORIAL_CLINICO HC INNER JOIN BENEFICIARIO B ON HC.ID_BENEFICIARIO = B.ID_BENEFICIARIO INNER JOIN EMPRESA E ON B.ID_EMPRESA = E.ID_EMPRESA WHERE HC.APARATO_AUDITIVO = ? ORDER BY EDAD", [Filtro], (err, result) =>{
+      if(err){
+        console.log(err)
+      } else {
+        res.json(result)
+      }
+  })
+  }
+  
+}
+
 module.exports = {
   sesionsForAreas,
   sesionsForBeneficiary,
@@ -339,5 +369,6 @@ module.exports = {
   reporteCualitativo,
   reporteInformeServicio,
   reporteF8,
-  Estadistica
+  Estadistica, 
+  Filtros
 };
