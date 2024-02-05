@@ -336,14 +336,14 @@ const buscarPostNatalesBene = (req, res) => {
 }
 
 const Asistencia = async (req, res) => {
-    const {Beneficiario} = req.body 
-    connection.query('SELECT * FROM ASISTENCIA WHERE ID_BENEFICIARIO = ? AND FECHA = CURDATE()', [Beneficiario], (err, result) => {
+    const {Beneficiario, Fecha} = req.body 
+    connection.query('SELECT * FROM ASISTENCIA WHERE ID_BENEFICIARIO = ? AND FECHA = ?', [Beneficiario, Fecha], (err, result) => {
         if(err) {
             console.log(err)
         } else if(result.length >= 1){
             res.send({message: 'Este Beneficiario ya tiene asistencia'})
         } else { 
-            connection.query('INSERT INTO ASISTENCIA (ID_BENEFICIARIO, FECHA) VALUES (?, CURDATE())', [Beneficiario], (err, result) =>{
+            connection.query('INSERT INTO ASISTENCIA (ID_BENEFICIARIO, FECHA) VALUES (?, ?)', [Beneficiario, Fecha], (err, result) =>{
                 if(err) {
                     console.log(err)
                 } else {

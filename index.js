@@ -8,6 +8,7 @@ app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
 app.use('/',rutas);
+
 function logMessage() {
   
   console.log(`Hola estamos funcionando`);
