@@ -17,7 +17,7 @@ router.post('/updateInfoBenePrenatales/:idBene', updateInfoBenePrenatales);
 router.post('/updateInfoBenePerinatales/:idbene', updateInfoBenePeriNatales);
 router.post('/updateInfoBenePostnatales/:idbene',updateInfoBenePostNatal);
 router.post('/updateEncargadosBene/:idEncargado',updateInfoBeneEncargado);
-router.post('/createSocioeconomico/:idEncargado',createSocioeconomico);
+router.post('/createSocioeconomico/:idBene',createSocioeconomico);
 router.get('/buscarEncargadoBene/:idBene',buscarEncargadoBene);
 router.get('/buscarHistorialClinicoBene/:idBene',buscarHistorialClinicoBene);
 router.get('/buscarPrenatalesBene/:idBene',buscarPrenatalesBene);
