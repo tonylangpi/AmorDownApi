@@ -62,6 +62,18 @@ const createHistorialClinico = async (req, res) => {
     }
 }
 
+const createSocioeconomico = async (req, res) => {
+    const {TIPO_FAMILIA, INTEGRANTES, FAMILIARES, TIPO_VIVIENDA, ECONOMICO} = req.body
+    const {idBene} = req.params
+    try{
+        await sequelize.query(`INSERT INTO SOCIOECONOMICO (ID_BENEFICIARIO, TIPO_FAMILIA, NO_INTEGRANTES, FAM_DISCAPACIDAD, TIPO_VIVIENDA, NIVEL_SOCIOECONOMICO) VALUES (${idBene}, '${TIPO_FAMILIA}', '${INTEGRANTES}', '${FAMILIARES}', '${TIPO_VIVIENDA}', '${ECONOMICO}')`, { type: QueryTypes.INSERT });
+        res.json({message:"Informacion agregada correctamente"})
+    } catch (err){
+        res.json({message:"Error de servidor"})
+        console.log(err)
+    }
+}
+
 const createPeriNatales = async (req, res) => {
     const { LLORO_INMEDIATAMENTE, COLORACION, INCUBADORA, COLOR } = req.body;
     const { idbene } = req.params;
@@ -426,4 +438,5 @@ module.exports = {
     Asistencia, 
     AsistenciaFecha, 
     bitacoraBene, 
+    createSocioeconomico
 }
