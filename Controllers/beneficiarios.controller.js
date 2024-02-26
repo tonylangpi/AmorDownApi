@@ -383,7 +383,7 @@ const bitacoraBene = async (req, res) => {
     const {Estado, Beneficiario, Motivo, Usuario} = req.body
     
     if(Estado === 1) {
-        connection.query("INSERT INTO BITACORA_BENE VALUES(?, ?, ?, ?)", [Beneficiario, 'Inactivando', Usuario, Motivo], (err, result) => {
+        connection.query("INSERT INTO BITACORA_BENE (ID_BENEFICIARIO, ACTIVIDAD, ID_USUARIO, MOTIVO, FECHA) VALUES(?, ?, ?, ?, CURDATE())", [Beneficiario, 'Inactivando', Usuario, Motivo], (err, result) => {
             if(err){
                 console.log(err)
             } else {
@@ -398,7 +398,7 @@ const bitacoraBene = async (req, res) => {
             }
         })
     } else if(Estado === 2){
-        connection.query("INSERT INTO BITACORA_BENE VALUES(?, ?, ?, ?)", [Beneficiario, 'Activando', Usuario, Motivo], (err, result) => {
+        connection.query("INSERT INTO BITACORA_BENE (ID_BENEFICIARIO, ACTIVIDAD, ID_USUARIO, MOTIVO, FECHA) VALUES(?, ?, ?, ?, CURDATE())", [Beneficiario, 'Activando', Usuario, Motivo], (err, result) => {
             if(err){
                 console.log(err)
             } else {
