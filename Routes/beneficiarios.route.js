@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express();
 const {upload} = require('../services/multer.services');
-const {createBeneficiarios,Asistencia, AsistenciaFecha, createSocioeconomico, createPrenatalesBeneficiarios,createHistorialClinico,createPeriNatales,createPostNatales,createEncargados,unionBeneficiarioEncargado, allBeneficiarios, updateInfoBene,updateInfoBeneHistorialClinico,updateInfoBenePrenatales,updateInfoBenePeriNatales,updateInfoBenePostNatal,updateInfoBeneEncargado, buscarEncargadoBene,buscarHistorialClinicoBene,buscarPrenatalesBene,buscarPerinatalesBene,buscarPostNatalesBene, bitacoraBene} = require('../Controllers/beneficiarios.controller');
+const {createBeneficiarios,Asistencia,AgregarBeneArea, AsistenciaFecha, createSocioeconomico, createPrenatalesBeneficiarios,createHistorialClinico,createPeriNatales,createPostNatales,createEncargados,unionBeneficiarioEncargado, allBeneficiarios, updateInfoBene,updateInfoBeneHistorialClinico,updateInfoBenePrenatales,updateInfoBenePeriNatales,updateInfoBenePostNatal,updateInfoBeneEncargado, buscarEncargadoBene,buscarHistorialClinicoBene,buscarPrenatalesBene,buscarPerinatalesBene,buscarPostNatalesBene, bitacoraBene} = require('../Controllers/beneficiarios.controller');
 
 router.post('/all', allBeneficiarios);
 router.post('/create', upload.array('files', 2), createBeneficiarios);
@@ -26,4 +26,5 @@ router.get('/buscarPostNatalesBene/:idBene',buscarPostNatalesBene);
 router.post('/AgregarAsistencia', Asistencia)
 router.post('/ListarAsistencias', AsistenciaFecha)
 router.post('/BitacoraBene', bitacoraBene)
+router.post('/AddBenetoArea', AgregarBeneArea)
 module.exports = router;

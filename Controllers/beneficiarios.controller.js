@@ -415,6 +415,20 @@ const bitacoraBene = async (req, res) => {
     }
 }
 
+const AgregarBeneArea = async (req, res) => {
+    const {idBene, Area, Motivo} = req.body 
+    if(idBene && Area) {
+        connection.query("INSERT INTO BENEFICIARIO_AREA (ID_BENEFICIARIO, ID_AREA, MOTIVO, ESTADO) VALUES (?, ?, ?, 1)", [idBene, Area, Motivo], (err, result) => {
+            if(err){
+                res.send({message:"Error de servidor"})
+                console.log(err)
+            } else {
+                 res.send({message:"Agregado Correctamente"})
+            }
+        })
+    }
+}
+
 module.exports = {
     createBeneficiarios,
     createPrenatalesBeneficiarios,
@@ -438,5 +452,6 @@ module.exports = {
     Asistencia, 
     AsistenciaFecha, 
     bitacoraBene, 
-    createSocioeconomico
+    createSocioeconomico, 
+    AgregarBeneArea
 }
