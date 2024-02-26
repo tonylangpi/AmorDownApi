@@ -396,7 +396,7 @@ const AreaUsuario = async (req, res) => {
     } else if (result.length >= 1){
       res.json({message:"Este usuario ya pertenese a esta area"})
     } else {
-      connection.query("INSERT INTO AREAS_USUARIOS VALUES (?, ?)", [Area, Usuario], (err, result) => {
+      connection.query("INSERT INTO AREAS_USUARIOS (ID_AREA, ID_USUARIOS) VALUES (?, ?)", [Area, Usuario], (err, result) => {
         if(err){
           console.log(err)
         } else {
