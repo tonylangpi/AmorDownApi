@@ -84,7 +84,7 @@ const SesionesDisponibles = async (req, res) => {
             }
         })
     } else {
-         connection.query('SELECT S.ID_SESION, S.NUMERO_SESION, HORA_INGRESO, HORA_EGRESO FROM SESIONES S WHERE NOT EXISTS ( SELECT 1 FROM SESIONES_BENEFICIARIO SB INNER JOIN AREAS A ON SB.ID_AREA = A.ID_AREA WHERE SB.ID_SESION = S.ID_SESION AND SB.ID_BENEFICIARIO = ? AND SB.FECHA = ? AND A.NOMBRE != "Psicologia")', [Beneficiario, Fechaa], (error, results) => {
+         connection.query("SELECT S.ID_SESION, S.NUMERO_SESION, HORA_INGRESO, HORA_EGRESO FROM SESIONES S WHERE NOT EXISTS ( SELECT 1 FROM SESIONES_BENEFICIARIO SB INNER JOIN AREAS A ON SB.ID_AREA = A.ID_AREA WHERE SB.ID_SESION = S.ID_SESION AND SB.ID_BENEFICIARIO = ? AND SB.FECHA = ? AND A.NOMBRE != 'Psicologia')", [Beneficiario, Fechaa], (error, results) => {
         if(error){
             console.log(error);
             
