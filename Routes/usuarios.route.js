@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express();
 
-const {getUsers,crearcontra, getUser,getUserName, createUsers, updateUsers, updateUsersPassword, inactivateUsers, getLevels, getCompany, SedeUsuario, AreaUsuario} = require('../Controllers/usuarios.controller');
+const {getUsers, getUser,getUserName, createUsers, updateUsers, updateUsersPassword, inactivateUsers, getLevels, getCompany, SedeUsuario, AreaUsuario} = require('../Controllers/usuarios.controller');
 
 //rutas de CRUD sobre tabla USUARIOS EN BD EN LA NUBE
 router.get('/all',getUsers);
@@ -15,5 +15,4 @@ router.post('/getLevels', getLevels);
 router.get('/getCompany', getCompany);
 router.post('/AgregarSedeUsuario', SedeUsuario)
 router.post('/AgregarAreaUsuario', AreaUsuario)
-router.post('/Holamundo', crearcontra)
 module.exports = router;
