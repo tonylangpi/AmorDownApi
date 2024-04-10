@@ -9,13 +9,8 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use('/',rutas);
 
-function logMessage() {
-  
-  console.log(`Hola estamos funcionando`);
-}
-
-setInterval(logMessage, 3600000);
 const port = process.env.PORT || 4000; 
   app.listen(port, () => {
     console.log(' 🚀 El servidor ha despegado en el puerto ', port);
   });
+
