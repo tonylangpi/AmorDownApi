@@ -48,6 +48,12 @@ const getUserName = (req, res) => {
   );
 };
 
+
+const crearcontra = async (req, res) => {
+  const contra ="Csutucd2003"
+  let passwordHash = await bcrypt.hash(contra, 10);
+  console.log(passwordHash)
+}
 const createUsers = async (req, res) => {
   const { email, nombre, id_nivel, id_rol, id_empresa, id_area, telefono } =
     req.body;
@@ -418,5 +424,6 @@ module.exports = {
   getLevels,
   getCompany, 
   SedeUsuario, 
-  AreaUsuario
+  AreaUsuario, 
+  crearcontra
 };
