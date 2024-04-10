@@ -6,7 +6,9 @@ const { transporter } = require('../services/nodemailer.services');
 
 
 
+
 const login = async (req, res) => {
+    console.log("hola")
     const { email, password } = req.body;
     const emailregex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
     const fechaActual = new Date();
